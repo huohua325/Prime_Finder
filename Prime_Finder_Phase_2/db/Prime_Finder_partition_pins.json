@@ -1,0 +1,41 @@
+{
+	"partitions" : [
+		{
+			"name" : "Top",
+			"pins" : [
+				{
+					"name" : "Is_Prime",
+					"strict" : false
+				},
+				{
+					"name" : "Done",
+					"strict" : false
+				},
+				{
+					"name" : "CLK",
+					"strict" : false
+				},
+				{
+					"name" : "Load",
+					"strict" : false
+				},
+				{
+					"name" : "N[0]",
+					"strict" : false
+				},
+				{
+					"name" : "N[1]",
+					"strict" : false
+				},
+				{
+					"name" : "N[2]",
+					"strict" : false
+				},
+				{
+					"name" : "N[3]",
+					"strict" : false
+				}
+			]
+		}
+	]
+}
