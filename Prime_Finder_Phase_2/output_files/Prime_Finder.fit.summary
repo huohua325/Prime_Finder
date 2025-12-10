@@ -1,14 +1,14 @@
-Fitter Status : Successful - Thu Dec 11 03:06:16 2025
+Fitter Status : Successful - Thu Dec 11 03:21:34 2025
 Quartus Prime Version : 18.1.0 Build 625 09/12/2018 SJ Lite Edition
 Revision Name : Prime_Finder
 Top-level Entity Name : Prime_Finder_16bit_Top_Group55
 Family : MAX 10
 Device : 10M50DAF484C7G
 Timing Models : Final
-Total logic elements : 1,695 / 49,760 ( 3 % )
-    Total combinational functions : 1,659 / 49,760 ( 3 % )
-    Dedicated logic registers : 191 / 49,760 ( < 1 % )
-Total registers : 191
+Total logic elements : 1,748 / 49,760 ( 4 % )
+    Total combinational functions : 1,716 / 49,760 ( 3 % )
+    Dedicated logic registers : 210 / 49,760 ( < 1 % )
+Total registers : 210
 Total pins : 65 / 360 ( 18 % )
 Total virtual pins : 0
 Total memory bits : 0 / 1,677,312 ( 0 % )

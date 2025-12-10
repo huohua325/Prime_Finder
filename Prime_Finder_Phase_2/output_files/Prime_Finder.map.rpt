@@ -1,5 +1,5 @@
 Analysis & Synthesis report for Prime_Finder
-Thu Dec 11 03:05:44 2025
+Thu Dec 11 03:21:18 2025
 Quartus Prime Version 18.1.0 Build 625 09/12/2018 SJ Lite Edition
 
 
@@ -58,15 +58,15 @@ refer to the applicable agreement for further details.
 +----------------------------------------------------------------------------------+
 ; Analysis & Synthesis Summary                                                     ;
 +------------------------------------+---------------------------------------------+
-; Analysis & Synthesis Status        ; Successful - Thu Dec 11 03:05:44 2025       ;
+; Analysis & Synthesis Status        ; Successful - Thu Dec 11 03:21:18 2025       ;
 ; Quartus Prime Version              ; 18.1.0 Build 625 09/12/2018 SJ Lite Edition ;
 ; Revision Name                      ; Prime_Finder                                ;
 ; Top-level Entity Name              ; Prime_Finder_16bit_Top_Group55              ;
 ; Family                             ; MAX 10                                      ;
-; Total logic elements               ; 1,703                                       ;
-;     Total combinational functions  ; 1,658                                       ;
-;     Dedicated logic registers      ; 191                                         ;
-; Total registers                    ; 191                                         ;
+; Total logic elements               ; 1,775                                       ;
+;     Total combinational functions  ; 1,714                                       ;
+;     Dedicated logic registers      ; 210                                         ;
+; Total registers                    ; 210                                         ;
 ; Total pins                         ; 65                                          ;
 ; Total virtual pins                 ; 0                                           ;
 ; Total memory bits                  ; 0                                           ;
@@ -180,7 +180,8 @@ refer to the applicable agreement for further details.
 ;     Processor 3            ;   0.0%      ;
 ;     Processor 4            ;   0.0%      ;
 ;     Processor 5            ;   0.0%      ;
-;     Processors 6-16        ;   0.0%      ;
+;     Processor 6            ;   0.0%      ;
+;     Processors 7-16        ;   0.0%      ;
 +----------------------------+-------------+
 
 
@@ -228,20 +229,20 @@ refer to the applicable agreement for further details.
 +---------------------------------------------+---------------------+
 ; Resource                                    ; Usage               ;
 +---------------------------------------------+---------------------+
-; Estimated Total logic elements              ; 1,703               ;
+; Estimated Total logic elements              ; 1,775               ;
 ;                                             ;                     ;
-; Total combinational functions               ; 1658                ;
+; Total combinational functions               ; 1714                ;
 ; Logic element usage by number of LUT inputs ;                     ;
-;     -- 4 input functions                    ; 458                 ;
-;     -- 3 input functions                    ; 465                 ;
-;     -- <=2 input functions                  ; 735                 ;
+;     -- 4 input functions                    ; 488                 ;
+;     -- 3 input functions                    ; 471                 ;
+;     -- <=2 input functions                  ; 755                 ;
 ;                                             ;                     ;
 ; Logic elements by mode                      ;                     ;
-;     -- normal mode                          ; 1159                ;
-;     -- arithmetic mode                      ; 499                 ;
+;     -- normal mode                          ; 1203                ;
+;     -- arithmetic mode                      ; 511                 ;
 ;                                             ;                     ;
-; Total registers                             ; 191                 ;
-;     -- Dedicated logic registers            ; 191                 ;
+; Total registers                             ; 210                 ;
+;     -- Dedicated logic registers            ; 210                 ;
 ;     -- I/O registers                        ; 0                   ;
 ;                                             ;                     ;
 ; I/O pins                                    ; 65                  ;
@@ -249,9 +250,9 @@ refer to the applicable agreement for further details.
 ; Embedded Multiplier 9-bit elements          ; 2                   ;
 ;                                             ;                     ;
 ; Maximum fan-out node                        ; MAX10_CLK1_50~input ;
-; Maximum fan-out                             ; 191                 ;
-; Total fan-out                               ; 5278                ;
-; Average fan-out                             ; 2.66                ;
+; Maximum fan-out                             ; 210                 ;
+; Total fan-out                               ; 5536                ;
+; Average fan-out                             ; 2.69                ;
 +---------------------------------------------+---------------------+
 
 
@@ -260,7 +261,7 @@ refer to the applicable agreement for further details.
 +----------------------------------------+---------------------+---------------------------+-------------+------------+--------------+---------+-----------+------+--------------+------------+---------------------------------------------------------------------------------------------------------------------------------+--------------------------------+--------------+
 ; Compilation Hierarchy Node             ; Combinational ALUTs ; Dedicated Logic Registers ; Memory Bits ; UFM Blocks ; DSP Elements ; DSP 9x9 ; DSP 18x18 ; Pins ; Virtual Pins ; ADC blocks ; Full Hierarchy Name                                                                                                             ; Entity Name                    ; Library Name ;
 +----------------------------------------+---------------------+---------------------------+-------------+------------+--------------+---------+-----------+------+--------------+------------+---------------------------------------------------------------------------------------------------------------------------------+--------------------------------+--------------+
-; |Prime_Finder_16bit_Top_Group55        ; 1658 (453)          ; 191 (191)                 ; 0           ; 0          ; 2            ; 0       ; 1         ; 65   ; 0            ; 0          ; |Prime_Finder_16bit_Top_Group55                                                                                                 ; Prime_Finder_16bit_Top_Group55 ; work         ;
+; |Prime_Finder_16bit_Top_Group55        ; 1714 (509)          ; 210 (210)                 ; 0           ; 0          ; 2            ; 0       ; 1         ; 65   ; 0            ; 0          ; |Prime_Finder_16bit_Top_Group55                                                                                                 ; Prime_Finder_16bit_Top_Group55 ; work         ;
 ;    |lpm_divide:Div0|                   ; 134 (0)             ; 0 (0)                     ; 0           ; 0          ; 0            ; 0       ; 0         ; 0    ; 0            ; 0          ; |Prime_Finder_16bit_Top_Group55|lpm_divide:Div0                                                                                 ; lpm_divide                     ; work         ;
 ;       |lpm_divide_mtl:auto_generated|  ; 134 (0)             ; 0 (0)                     ; 0           ; 0          ; 0            ; 0       ; 0         ; 0    ; 0            ; 0          ; |Prime_Finder_16bit_Top_Group55|lpm_divide:Div0|lpm_divide_mtl:auto_generated                                                   ; lpm_divide_mtl                 ; work         ;
 ;          |sign_div_unsign_olh:divider| ; 134 (0)             ; 0 (0)                     ; 0           ; 0          ; 0            ; 0       ; 0         ; 0    ; 0            ; 0          ; |Prime_Finder_16bit_Top_Group55|lpm_divide:Div0|lpm_divide_mtl:auto_generated|sign_div_unsign_olh:divider                       ; sign_div_unsign_olh            ; work         ;
@@ -318,48 +319,50 @@ Note: number of Embedded Multiplier Blocks used is only available after a succes
 
 
 Encoding Type:  One-Hot
-+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-; State Machine - |Prime_Finder_16bit_Top_Group55|main_state                                                                                                                                                                                                                                                                                                                       ;
-+--------------------------+------------------------+-----------------------+--------------------------+------------------------+--------------------------+------------------------+--------------------+-------------------------+-----------------------+-----------------------+--------------------------+-----------------------+---------------------+----------------------+
-; Name                     ; main_state.SHOW_RESULT ; main_state.CHECK_SQRT ; main_state.DIV_6KP1_COMP ; main_state.CHECK_6K_P1 ; main_state.DIV_6KM1_COMP ; main_state.CHECK_6K_M1 ; main_state.NEXT_6K ; main_state.DIV3_COMPUTE ; main_state.CHECK_DIV3 ; main_state.CHECK_DIV2 ; main_state.CHECK_SPECIAL ; main_state.INIT_CHECK ; main_state.WAIT_LOW ; main_state.WAIT_HIGH ;
-+--------------------------+------------------------+-----------------------+--------------------------+------------------------+--------------------------+------------------------+--------------------+-------------------------+-----------------------+-----------------------+--------------------------+-----------------------+---------------------+----------------------+
-; main_state.WAIT_HIGH     ; 0                      ; 0                     ; 0                        ; 0                      ; 0                        ; 0                      ; 0                  ; 0                       ; 0                     ; 0                     ; 0                        ; 0                     ; 0                   ; 0                    ;
-; main_state.WAIT_LOW      ; 0                      ; 0                     ; 0                        ; 0                      ; 0                        ; 0                      ; 0                  ; 0                       ; 0                     ; 0                     ; 0                        ; 0                     ; 1                   ; 1                    ;
-; main_state.INIT_CHECK    ; 0                      ; 0                     ; 0                        ; 0                      ; 0                        ; 0                      ; 0                  ; 0                       ; 0                     ; 0                     ; 0                        ; 1                     ; 0                   ; 1                    ;
-; main_state.CHECK_SPECIAL ; 0                      ; 0                     ; 0                        ; 0                      ; 0                        ; 0                      ; 0                  ; 0                       ; 0                     ; 0                     ; 1                        ; 0                     ; 0                   ; 1                    ;
-; main_state.CHECK_DIV2    ; 0                      ; 0                     ; 0                        ; 0                      ; 0                        ; 0                      ; 0                  ; 0                       ; 0                     ; 1                     ; 0                        ; 0                     ; 0                   ; 1                    ;
-; main_state.CHECK_DIV3    ; 0                      ; 0                     ; 0                        ; 0                      ; 0                        ; 0                      ; 0                  ; 0                       ; 1                     ; 0                     ; 0                        ; 0                     ; 0                   ; 1                    ;
-; main_state.DIV3_COMPUTE  ; 0                      ; 0                     ; 0                        ; 0                      ; 0                        ; 0                      ; 0                  ; 1                       ; 0                     ; 0                     ; 0                        ; 0                     ; 0                   ; 1                    ;
-; main_state.NEXT_6K       ; 0                      ; 0                     ; 0                        ; 0                      ; 0                        ; 0                      ; 1                  ; 0                       ; 0                     ; 0                     ; 0                        ; 0                     ; 0                   ; 1                    ;
-; main_state.CHECK_6K_M1   ; 0                      ; 0                     ; 0                        ; 0                      ; 0                        ; 1                      ; 0                  ; 0                       ; 0                     ; 0                     ; 0                        ; 0                     ; 0                   ; 1                    ;
-; main_state.DIV_6KM1_COMP ; 0                      ; 0                     ; 0                        ; 0                      ; 1                        ; 0                      ; 0                  ; 0                       ; 0                     ; 0                     ; 0                        ; 0                     ; 0                   ; 1                    ;
-; main_state.CHECK_6K_P1   ; 0                      ; 0                     ; 0                        ; 1                      ; 0                        ; 0                      ; 0                  ; 0                       ; 0                     ; 0                     ; 0                        ; 0                     ; 0                   ; 1                    ;
-; main_state.DIV_6KP1_COMP ; 0                      ; 0                     ; 1                        ; 0                      ; 0                        ; 0                      ; 0                  ; 0                       ; 0                     ; 0                     ; 0                        ; 0                     ; 0                   ; 1                    ;
-; main_state.CHECK_SQRT    ; 0                      ; 1                     ; 0                        ; 0                      ; 0                        ; 0                      ; 0                  ; 0                       ; 0                     ; 0                     ; 0                        ; 0                     ; 0                   ; 1                    ;
-; main_state.SHOW_RESULT   ; 1                      ; 0                     ; 0                        ; 0                      ; 0                        ; 0                      ; 0                  ; 0                       ; 0                     ; 0                     ; 0                        ; 0                     ; 0                   ; 1                    ;
-+--------------------------+------------------------+-----------------------+--------------------------+------------------------+--------------------------+------------------------+--------------------+-------------------------+-----------------------+-----------------------+--------------------------+-----------------------+---------------------+----------------------+
++----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; State Machine - |Prime_Finder_16bit_Top_Group55|main_state                                                                                                                                                                                                                                                                                                     ;
++---------------------------+------------------------+-----------------------+--------------------------+------------------------+--------------------------+------------------------+--------------------+--------------------------+---------------------------+--------------------------+-----------------------+---------------------+----------------------+
+; Name                      ; main_state.SHOW_RESULT ; main_state.CHECK_SQRT ; main_state.DIV_6KP1_COMP ; main_state.CHECK_6K_P1 ; main_state.DIV_6KM1_COMP ; main_state.CHECK_6K_M1 ; main_state.NEXT_6K ; main_state.PARALLEL_WAIT ; main_state.PARALLEL_DIV23 ; main_state.CHECK_SPECIAL ; main_state.INIT_CHECK ; main_state.WAIT_LOW ; main_state.WAIT_HIGH ;
++---------------------------+------------------------+-----------------------+--------------------------+------------------------+--------------------------+------------------------+--------------------+--------------------------+---------------------------+--------------------------+-----------------------+---------------------+----------------------+
+; main_state.WAIT_HIGH      ; 0                      ; 0                     ; 0                        ; 0                      ; 0                        ; 0                      ; 0                  ; 0                        ; 0                         ; 0                        ; 0                     ; 0                   ; 0                    ;
+; main_state.WAIT_LOW       ; 0                      ; 0                     ; 0                        ; 0                      ; 0                        ; 0                      ; 0                  ; 0                        ; 0                         ; 0                        ; 0                     ; 1                   ; 1                    ;
+; main_state.INIT_CHECK     ; 0                      ; 0                     ; 0                        ; 0                      ; 0                        ; 0                      ; 0                  ; 0                        ; 0                         ; 0                        ; 1                     ; 0                   ; 1                    ;
+; main_state.CHECK_SPECIAL  ; 0                      ; 0                     ; 0                        ; 0                      ; 0                        ; 0                      ; 0                  ; 0                        ; 0                         ; 1                        ; 0                     ; 0                   ; 1                    ;
+; main_state.PARALLEL_DIV23 ; 0                      ; 0                     ; 0                        ; 0                      ; 0                        ; 0                      ; 0                  ; 0                        ; 1                         ; 0                        ; 0                     ; 0                   ; 1                    ;
+; main_state.PARALLEL_WAIT  ; 0                      ; 0                     ; 0                        ; 0                      ; 0                        ; 0                      ; 0                  ; 1                        ; 0                         ; 0                        ; 0                     ; 0                   ; 1                    ;
+; main_state.NEXT_6K        ; 0                      ; 0                     ; 0                        ; 0                      ; 0                        ; 0                      ; 1                  ; 0                        ; 0                         ; 0                        ; 0                     ; 0                   ; 1                    ;
+; main_state.CHECK_6K_M1    ; 0                      ; 0                     ; 0                        ; 0                      ; 0                        ; 1                      ; 0                  ; 0                        ; 0                         ; 0                        ; 0                     ; 0                   ; 1                    ;
+; main_state.DIV_6KM1_COMP  ; 0                      ; 0                     ; 0                        ; 0                      ; 1                        ; 0                      ; 0                  ; 0                        ; 0                         ; 0                        ; 0                     ; 0                   ; 1                    ;
+; main_state.CHECK_6K_P1    ; 0                      ; 0                     ; 0                        ; 1                      ; 0                        ; 0                      ; 0                  ; 0                        ; 0                         ; 0                        ; 0                     ; 0                   ; 1                    ;
+; main_state.DIV_6KP1_COMP  ; 0                      ; 0                     ; 1                        ; 0                      ; 0                        ; 0                      ; 0                  ; 0                        ; 0                         ; 0                        ; 0                     ; 0                   ; 1                    ;
+; main_state.CHECK_SQRT     ; 0                      ; 1                     ; 0                        ; 0                      ; 0                        ; 0                      ; 0                  ; 0                        ; 0                         ; 0                        ; 0                     ; 0                   ; 1                    ;
+; main_state.SHOW_RESULT    ; 1                      ; 0                     ; 0                        ; 0                      ; 0                        ; 0                      ; 0                  ; 0                        ; 0                         ; 0                        ; 0                     ; 0                   ; 1                    ;
++---------------------------+------------------------+-----------------------+--------------------------+------------------------+--------------------------+------------------------+--------------------+--------------------------+---------------------------+--------------------------+-----------------------+---------------------+----------------------+
 
 
-+--------------------------------------------------------------------------------+
-; Registers Removed During Synthesis                                             ;
-+---------------------------------------+----------------------------------------+
-; Register name                         ; Reason for Removal                     ;
-+---------------------------------------+----------------------------------------+
-; current_div[0]                        ; Stuck at VCC due to stuck port data_in ;
-; div_divisor[0]                        ; Stuck at VCC due to stuck port data_in ;
-; k_value[15]                           ; Lost fanout                            ;
-; Total Number of Removed Registers = 3 ;                                        ;
-+---------------------------------------+----------------------------------------+
++---------------------------------------------------------------------------------+
+; Registers Removed During Synthesis                                              ;
++----------------------------------------+----------------------------------------+
+; Register name                          ; Reason for Removal                     ;
++----------------------------------------+----------------------------------------+
+; div_remainder[1..15]                   ; Stuck at GND due to stuck port data_in ;
+; div2_divisor[2..15]                    ; Stuck at GND due to stuck port data_in ;
+; div2_divisor[0]                        ; Stuck at VCC due to stuck port data_in ;
+; current_div[0]                         ; Stuck at VCC due to stuck port data_in ;
+; div_divisor[0]                         ; Stuck at VCC due to stuck port data_in ;
+; k_value[15]                            ; Lost fanout                            ;
+; Total Number of Removed Registers = 33 ;                                        ;
++----------------------------------------+----------------------------------------+
 
 
-+-------------------------------------------------------------------------------------+
-; Removed Registers Triggering Further Register Optimizations                         ;
-+----------------+---------------------------+----------------------------------------+
-; Register name  ; Reason for Removal        ; Registers Removed due to This Register ;
-+----------------+---------------------------+----------------------------------------+
-; current_div[0] ; Stuck at VCC              ; div_divisor[0]                         ;
-;                ; due to stuck port data_in ;                                        ;
-+----------------+---------------------------+----------------------------------------+
++----------------------------------------------------------------------------------------+
+; Removed Registers Triggering Further Register Optimizations                            ;
++-------------------+---------------------------+----------------------------------------+
+; Register name     ; Reason for Removal        ; Registers Removed due to This Register ;
++-------------------+---------------------------+----------------------------------------+
+; div_remainder[15] ; Stuck at GND              ; current_div[0], div_divisor[0]         ;
+;                   ; due to stuck port data_in ;                                        ;
++-------------------+---------------------------+----------------------------------------+
 
 
 +------------------------------------------------------+
@@ -367,12 +370,12 @@ Encoding Type:  One-Hot
 +----------------------------------------------+-------+
 ; Statistic                                    ; Value ;
 +----------------------------------------------+-------+
-; Total registers                              ; 191   ;
-; Number of registers using Synchronous Clear  ; 63    ;
-; Number of registers using Synchronous Load   ; 13    ;
+; Total registers                              ; 210   ;
+; Number of registers using Synchronous Clear  ; 49    ;
+; Number of registers using Synchronous Load   ; 29    ;
 ; Number of registers using Asynchronous Clear ; 0     ;
 ; Number of registers using Asynchronous Load  ; 0     ;
-; Number of registers using Clock Enable       ; 116   ;
+; Number of registers using Clock Enable       ; 143   ;
 ; Number of registers using Preset             ; 0     ;
 +----------------------------------------------+-------+
 
@@ -382,38 +385,39 @@ Encoding Type:  One-Hot
 +-----------------------------------------+---------+
 ; Inverted Register                       ; Fan out ;
 +-----------------------------------------+---------+
-; key0_stable                             ; 4       ;
-; key0_prev                               ; 1       ;
+; current_div[2]                          ; 4       ;
 ; key1_stable                             ; 4       ;
 ; key1_prev                               ; 1       ;
-; current_div[2]                          ; 4       ;
-; key0_sync2                              ; 2       ;
+; key0_stable                             ; 4       ;
+; key0_prev                               ; 1       ;
+; k_value[0]                              ; 6       ;
 ; key1_sync2                              ; 2       ;
-; k_value[0]                              ; 5       ;
-; key0_sync1                              ; 1       ;
+; key0_sync2                              ; 2       ;
 ; key1_sync1                              ; 1       ;
+; key0_sync1                              ; 1       ;
 ; Total number of inverted registers = 10 ;         ;
 +-----------------------------------------+---------+
 
 
-+----------------------------------------------------------------------------------------------------------------------------------------------------------------+
-; Multiplexer Restructuring Statistics (Restructuring Performed)                                                                                                 ;
-+--------------------+-----------+---------------+----------------------+------------------------+------------+--------------------------------------------------+
-; Multiplexer Inputs ; Bus Width ; Baseline Area ; Area if Restructured ; Saving if Restructured ; Registered ; Example Multiplexer Output                       ;
-+--------------------+-----------+---------------+----------------------+------------------------+------------+--------------------------------------------------+
-; 3:1                ; 16 bits   ; 32 LEs        ; 16 LEs               ; 16 LEs                 ; Yes        ; |Prime_Finder_16bit_Top_Group55|debounce_cnt0[4] ;
-; 3:1                ; 16 bits   ; 32 LEs        ; 16 LEs               ; 16 LEs                 ; Yes        ; |Prime_Finder_16bit_Top_Group55|debounce_cnt1[8] ;
-; 6:1                ; 14 bits   ; 56 LEs        ; 14 LEs               ; 42 LEs                 ; Yes        ; |Prime_Finder_16bit_Top_Group55|div_count[13]    ;
-; 4:1                ; 17 bits   ; 34 LEs        ; 17 LEs               ; 17 LEs                 ; Yes        ; |Prime_Finder_16bit_Top_Group55|sub_count[0]     ;
-; 4:1                ; 16 bits   ; 32 LEs        ; 16 LEs               ; 16 LEs                 ; Yes        ; |Prime_Finder_16bit_Top_Group55|div_dividend[2]  ;
-; 6:1                ; 15 bits   ; 60 LEs        ; 15 LEs               ; 45 LEs                 ; Yes        ; |Prime_Finder_16bit_Top_Group55|k_value[13]      ;
-; 4:1                ; 15 bits   ; 30 LEs        ; 15 LEs               ; 15 LEs                 ; Yes        ; |Prime_Finder_16bit_Top_Group55|current_div[14]  ;
-; 4:1                ; 7 bits    ; 14 LEs        ; 14 LEs               ; 0 LEs                  ; No         ; |Prime_Finder_16bit_Top_Group55|Selector150      ;
-; 4:1                ; 7 bits    ; 14 LEs        ; 14 LEs               ; 0 LEs                  ; No         ; |Prime_Finder_16bit_Top_Group55|Selector135      ;
-; 4:1                ; 7 bits    ; 14 LEs        ; 14 LEs               ; 0 LEs                  ; No         ; |Prime_Finder_16bit_Top_Group55|Selector140      ;
-; 9:1                ; 2 bits    ; 12 LEs        ; 8 LEs                ; 4 LEs                  ; No         ; |Prime_Finder_16bit_Top_Group55|Selector34       ;
-; 9:1                ; 2 bits    ; 12 LEs        ; 4 LEs                ; 8 LEs                  ; No         ; |Prime_Finder_16bit_Top_Group55|Selector43       ;
-+--------------------+-----------+---------------+----------------------+------------------------+------------+--------------------------------------------------+
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Multiplexer Restructuring Statistics (Restructuring Performed)                                                                                                  ;
++--------------------+-----------+---------------+----------------------+------------------------+------------+---------------------------------------------------+
+; Multiplexer Inputs ; Bus Width ; Baseline Area ; Area if Restructured ; Saving if Restructured ; Registered ; Example Multiplexer Output                        ;
++--------------------+-----------+---------------+----------------------+------------------------+------------+---------------------------------------------------+
+; 3:1                ; 16 bits   ; 32 LEs        ; 16 LEs               ; 16 LEs                 ; Yes        ; |Prime_Finder_16bit_Top_Group55|debounce_cnt0[0]  ;
+; 3:1                ; 16 bits   ; 32 LEs        ; 16 LEs               ; 16 LEs                 ; Yes        ; |Prime_Finder_16bit_Top_Group55|debounce_cnt1[11] ;
+; 4:1                ; 16 bits   ; 32 LEs        ; 16 LEs               ; 16 LEs                 ; Yes        ; |Prime_Finder_16bit_Top_Group55|div2_dividend[0]  ;
+; 5:1                ; 13 bits   ; 39 LEs        ; 26 LEs               ; 13 LEs                 ; Yes        ; |Prime_Finder_16bit_Top_Group55|div_count[3]      ;
+; 4:1                ; 16 bits   ; 32 LEs        ; 16 LEs               ; 16 LEs                 ; Yes        ; |Prime_Finder_16bit_Top_Group55|div_dividend[13]  ;
+; 6:1                ; 15 bits   ; 60 LEs        ; 15 LEs               ; 45 LEs                 ; Yes        ; |Prime_Finder_16bit_Top_Group55|k_value[5]        ;
+; 6:1                ; 17 bits   ; 68 LEs        ; 17 LEs               ; 51 LEs                 ; Yes        ; |Prime_Finder_16bit_Top_Group55|sub_count[7]      ;
+; 4:1                ; 15 bits   ; 30 LEs        ; 15 LEs               ; 15 LEs                 ; Yes        ; |Prime_Finder_16bit_Top_Group55|current_div[15]   ;
+; 4:1                ; 7 bits    ; 14 LEs        ; 14 LEs               ; 0 LEs                  ; No         ; |Prime_Finder_16bit_Top_Group55|Selector151       ;
+; 4:1                ; 7 bits    ; 14 LEs        ; 14 LEs               ; 0 LEs                  ; No         ; |Prime_Finder_16bit_Top_Group55|Selector134       ;
+; 4:1                ; 7 bits    ; 14 LEs        ; 14 LEs               ; 0 LEs                  ; No         ; |Prime_Finder_16bit_Top_Group55|Selector140       ;
+; 11:1               ; 2 bits    ; 14 LEs        ; 6 LEs                ; 8 LEs                  ; No         ; |Prime_Finder_16bit_Top_Group55|Selector33        ;
+; 11:1               ; 2 bits    ; 14 LEs        ; 4 LEs                ; 10 LEs                 ; No         ; |Prime_Finder_16bit_Top_Group55|Selector40        ;
++--------------------+-----------+---------------+----------------------+------------------------+------------+---------------------------------------------------+
 
 
 +------------------------------------------------------------------+
@@ -661,27 +665,28 @@ Note: In order to hide this table in the UI and the text report file, please set
 ; Type                  ; Count                       ;
 +-----------------------+-----------------------------+
 ; boundary_port         ; 65                          ;
-; cycloneiii_ff         ; 191                         ;
-;     ENA               ; 72                          ;
-;     ENA SCLR          ; 31                          ;
-;     ENA SLD           ; 13                          ;
+; cycloneiii_ff         ; 210                         ;
+;     ENA               ; 102                         ;
+;     ENA SCLR          ; 17                          ;
+;     ENA SLD           ; 24                          ;
 ;     SCLR              ; 32                          ;
-;     plain             ; 43                          ;
-; cycloneiii_lcell_comb ; 1661                        ;
-;     arith             ; 499                         ;
-;         2 data inputs ; 118                         ;
+;     SLD               ; 5                           ;
+;     plain             ; 30                          ;
+; cycloneiii_lcell_comb ; 1717                        ;
+;     arith             ; 511                         ;
+;         2 data inputs ; 130                         ;
 ;         3 data inputs ; 381                         ;
-;     normal            ; 1162                        ;
+;     normal            ; 1206                        ;
 ;         0 data inputs ; 60                          ;
-;         1 data inputs ; 12                          ;
-;         2 data inputs ; 548                         ;
-;         3 data inputs ; 84                          ;
-;         4 data inputs ; 458                         ;
+;         1 data inputs ; 14                          ;
+;         2 data inputs ; 554                         ;
+;         3 data inputs ; 90                          ;
+;         4 data inputs ; 488                         ;
 ; cycloneiii_mac_mult   ; 1                           ;
 ; cycloneiii_mac_out    ; 1                           ;
 ;                       ;                             ;
 ; Max LUT depth         ; 45.50                       ;
-; Average LUT depth     ; 26.58                       ;
+; Average LUT depth     ; 25.77                       ;
 +-----------------------+-----------------------------+
 
 
@@ -700,7 +705,7 @@ Note: In order to hide this table in the UI and the text report file, please set
 Info: *******************************************************************
 Info: Running Quartus Prime Analysis & Synthesis
     Info: Version 18.1.0 Build 625 09/12/2018 SJ Lite Edition
-    Info: Processing started: Thu Dec 11 03:05:18 2025
+    Info: Processing started: Thu Dec 11 03:21:04 2025
 Info: Command: quartus_map --read_settings_files=on --write_settings_files=off Prime_Finder -c Prime_Finder
 Warning (18236): Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance.
 Info (20030): Parallel compilation is enabled and will use 16 of the 16 processors detected
@@ -726,8 +731,8 @@ Info (12021): Found 2 design units, including 1 entities, in source file prime_f
     Info (12022): Found design unit 1: Prime_Finder_6k1_Group55-rtl File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_6k1_Group55.vhd Line: 35
     Info (12023): Found entity 1: Prime_Finder_6k1_Group55 File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_6k1_Group55.vhd Line: 23
 Info (12021): Found 2 design units, including 1 entities, in source file prime_finder_16bit_top_group55.vhd
-    Info (12022): Found design unit 1: Prime_Finder_16bit_Top_Group55-rtl File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 53
-    Info (12023): Found entity 1: Prime_Finder_16bit_Top_Group55 File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 29
+    Info (12022): Found design unit 1: Prime_Finder_16bit_Top_Group55-rtl File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 54
+    Info (12023): Found entity 1: Prime_Finder_16bit_Top_Group55 File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 30
 Info (12021): Found 2 design units, including 1 entities, in source file longdivision_cla_pipeline_group55.vhd
     Info (12022): Found design unit 1: LongDivision_CLA_Pipeline_Group55-rtl File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/LongDivision_CLA_Pipeline_Group55.vhd Line: 32
     Info (12023): Found entity 1: LongDivision_CLA_Pipeline_Group55 File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/LongDivision_CLA_Pipeline_Group55.vhd Line: 19
@@ -754,20 +759,20 @@ Info (12021): Found 2 design units, including 1 entities, in source file prime_f
     Info (12023): Found entity 1: Prime_Finder_Top_Group55 File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_Top_Group55.vhd Line: 23
 Info (12127): Elaborating entity "Prime_Finder_16bit_Top_Group55" for the top level hierarchy
 Warning (10036): Verilog HDL or VHDL warning at Prime_Finder_16bit_Top_Group55.vhd(81): object "data_low" assigned a value but never read File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 81
-Warning (10036): Verilog HDL or VHDL warning at Prime_Finder_16bit_Top_Group55.vhd(123): object "div_remainder" assigned a value but never read File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 123
-Warning (10036): Verilog HDL or VHDL warning at Prime_Finder_16bit_Top_Group55.vhd(135): object "divisor_sq" assigned a value but never read File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 135
+Warning (10036): Verilog HDL or VHDL warning at Prime_Finder_16bit_Top_Group55.vhd(150): object "div2_remainder" assigned a value but never read File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 150
+Warning (10036): Verilog HDL or VHDL warning at Prime_Finder_16bit_Top_Group55.vhd(162): object "divisor_sq" assigned a value but never read File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 162
 Info (278001): Inferred 9 megafunctions from design logic
-    Info (278004): Inferred divider/modulo megafunction ("lpm_divide") from the following logic: "Mod1" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 580
-    Info (278004): Inferred divider/modulo megafunction ("lpm_divide") from the following logic: "Mod3" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 596
-    Info (278004): Inferred divider/modulo megafunction ("lpm_divide") from the following logic: "Div3" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 595
-    Info (278004): Inferred divider/modulo megafunction ("lpm_divide") from the following logic: "Div1" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 579
-    Info (278004): Inferred divider/modulo megafunction ("lpm_divide") from the following logic: "Mod2" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 594
-    Info (278004): Inferred divider/modulo megafunction ("lpm_divide") from the following logic: "Div2" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 593
-    Info (278004): Inferred divider/modulo megafunction ("lpm_divide") from the following logic: "Mod0" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 571
-    Info (278004): Inferred divider/modulo megafunction ("lpm_divide") from the following logic: "Div0" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 570
-    Info (278003): Inferred multiplier megafunction ("lpm_mult") from the following logic: "Mult0" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 453
-Info (12130): Elaborated megafunction instantiation "lpm_divide:Mod1" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 580
-Info (12133): Instantiated megafunction "lpm_divide:Mod1" with the following parameter: File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 580
+    Info (278004): Inferred divider/modulo megafunction ("lpm_divide") from the following logic: "Mod1" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 688
+    Info (278004): Inferred divider/modulo megafunction ("lpm_divide") from the following logic: "Mod3" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 704
+    Info (278004): Inferred divider/modulo megafunction ("lpm_divide") from the following logic: "Div3" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 703
+    Info (278004): Inferred divider/modulo megafunction ("lpm_divide") from the following logic: "Div1" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 687
+    Info (278004): Inferred divider/modulo megafunction ("lpm_divide") from the following logic: "Mod2" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 702
+    Info (278004): Inferred divider/modulo megafunction ("lpm_divide") from the following logic: "Div2" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 701
+    Info (278004): Inferred divider/modulo megafunction ("lpm_divide") from the following logic: "Mod0" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 679
+    Info (278004): Inferred divider/modulo megafunction ("lpm_divide") from the following logic: "Div0" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 678
+    Info (278003): Inferred multiplier megafunction ("lpm_mult") from the following logic: "Mult0" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 561
+Info (12130): Elaborated megafunction instantiation "lpm_divide:Mod1" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 688
+Info (12133): Instantiated megafunction "lpm_divide:Mod1" with the following parameter: File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 688
     Info (12134): Parameter "LPM_WIDTHN" = "17"
     Info (12134): Parameter "LPM_WIDTHD" = "17"
     Info (12134): Parameter "LPM_NREPRESENTATION" = "UNSIGNED"
@@ -782,8 +787,8 @@ Info (12021): Found 1 design units, including 1 entities, in source file db/add_
     Info (12023): Found entity 1: add_sub_t3c File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/db/add_sub_t3c.tdf Line: 22
 Info (12021): Found 1 design units, including 1 entities, in source file db/add_sub_u3c.tdf
     Info (12023): Found entity 1: add_sub_u3c File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/db/add_sub_u3c.tdf Line: 22
-Info (12130): Elaborated megafunction instantiation "lpm_divide:Mod3" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 596
-Info (12133): Instantiated megafunction "lpm_divide:Mod3" with the following parameter: File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 596
+Info (12130): Elaborated megafunction instantiation "lpm_divide:Mod3" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 704
+Info (12133): Instantiated megafunction "lpm_divide:Mod3" with the following parameter: File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 704
     Info (12134): Parameter "LPM_WIDTHN" = "7"
     Info (12134): Parameter "LPM_WIDTHD" = "7"
     Info (12134): Parameter "LPM_NREPRESENTATION" = "UNSIGNED"
@@ -794,8 +799,8 @@ Info (12021): Found 1 design units, including 1 entities, in source file db/sign
     Info (12023): Found entity 1: sign_div_unsign_dkh File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/db/sign_div_unsign_dkh.tdf Line: 24
 Info (12021): Found 1 design units, including 1 entities, in source file db/alt_u_div_4fe.tdf
     Info (12023): Found entity 1: alt_u_div_4fe File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/db/alt_u_div_4fe.tdf Line: 26
-Info (12130): Elaborated megafunction instantiation "lpm_divide:Div3" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 595
-Info (12133): Instantiated megafunction "lpm_divide:Div3" with the following parameter: File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 595
+Info (12130): Elaborated megafunction instantiation "lpm_divide:Div3" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 703
+Info (12133): Instantiated megafunction "lpm_divide:Div3" with the following parameter: File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 703
     Info (12134): Parameter "LPM_WIDTHN" = "7"
     Info (12134): Parameter "LPM_WIDTHD" = "4"
     Info (12134): Parameter "LPM_NREPRESENTATION" = "UNSIGNED"
@@ -806,8 +811,8 @@ Info (12021): Found 1 design units, including 1 entities, in source file db/sign
     Info (12023): Found entity 1: sign_div_unsign_akh File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/db/sign_div_unsign_akh.tdf Line: 24
 Info (12021): Found 1 design units, including 1 entities, in source file db/alt_u_div_uee.tdf
     Info (12023): Found entity 1: alt_u_div_uee File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/db/alt_u_div_uee.tdf Line: 26
-Info (12130): Elaborated megafunction instantiation "lpm_divide:Div1" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 579
-Info (12133): Instantiated megafunction "lpm_divide:Div1" with the following parameter: File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 579
+Info (12130): Elaborated megafunction instantiation "lpm_divide:Div1" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 687
+Info (12133): Instantiated megafunction "lpm_divide:Div1" with the following parameter: File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 687
     Info (12134): Parameter "LPM_WIDTHN" = "17"
     Info (12134): Parameter "LPM_WIDTHD" = "7"
     Info (12134): Parameter "LPM_NREPRESENTATION" = "UNSIGNED"
@@ -818,8 +823,8 @@ Info (12021): Found 1 design units, including 1 entities, in source file db/sign
     Info (12023): Found entity 1: sign_div_unsign_ulh File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/db/sign_div_unsign_ulh.tdf Line: 24
 Info (12021): Found 1 design units, including 1 entities, in source file db/alt_u_div_6ie.tdf
     Info (12023): Found entity 1: alt_u_div_6ie File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/db/alt_u_div_6ie.tdf Line: 26
-Info (12130): Elaborated megafunction instantiation "lpm_divide:Mod0" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 571
-Info (12133): Instantiated megafunction "lpm_divide:Mod0" with the following parameter: File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 571
+Info (12130): Elaborated megafunction instantiation "lpm_divide:Mod0" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 679
+Info (12133): Instantiated megafunction "lpm_divide:Mod0" with the following parameter: File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 679
     Info (12134): Parameter "LPM_WIDTHN" = "14"
     Info (12134): Parameter "LPM_WIDTHD" = "14"
     Info (12134): Parameter "LPM_NREPRESENTATION" = "UNSIGNED"
@@ -830,8 +835,8 @@ Info (12021): Found 1 design units, including 1 entities, in source file db/sign
     Info (12023): Found entity 1: sign_div_unsign_9nh File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/db/sign_div_unsign_9nh.tdf Line: 24
 Info (12021): Found 1 design units, including 1 entities, in source file db/alt_u_div_ske.tdf
     Info (12023): Found entity 1: alt_u_div_ske File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/db/alt_u_div_ske.tdf Line: 26
-Info (12130): Elaborated megafunction instantiation "lpm_divide:Div0" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 570
-Info (12133): Instantiated megafunction "lpm_divide:Div0" with the following parameter: File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 570
+Info (12130): Elaborated megafunction instantiation "lpm_divide:Div0" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 678
+Info (12133): Instantiated megafunction "lpm_divide:Div0" with the following parameter: File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 678
     Info (12134): Parameter "LPM_WIDTHN" = "14"
     Info (12134): Parameter "LPM_WIDTHD" = "4"
     Info (12134): Parameter "LPM_NREPRESENTATION" = "UNSIGNED"
@@ -842,8 +847,8 @@ Info (12021): Found 1 design units, including 1 entities, in source file db/sign
     Info (12023): Found entity 1: sign_div_unsign_olh File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/db/sign_div_unsign_olh.tdf Line: 24
 Info (12021): Found 1 design units, including 1 entities, in source file db/alt_u_div_qhe.tdf
     Info (12023): Found entity 1: alt_u_div_qhe File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/db/alt_u_div_qhe.tdf Line: 26
-Info (12130): Elaborated megafunction instantiation "lpm_mult:Mult0" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 453
-Info (12133): Instantiated megafunction "lpm_mult:Mult0" with the following parameter: File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 453
+Info (12130): Elaborated megafunction instantiation "lpm_mult:Mult0" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 561
+Info (12133): Instantiated megafunction "lpm_mult:Mult0" with the following parameter: File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 561
     Info (12134): Parameter "LPM_WIDTHA" = "16"
     Info (12134): Parameter "LPM_WIDTHB" = "16"
     Info (12134): Parameter "LPM_WIDTHP" = "32"
@@ -860,17 +865,17 @@ Info (17049): 1 registers lost all their fanouts during netlist optimizations.
 Info (16010): Generating hard_block partition "hard_block:auto_generated_inst"
     Info (16011): Adding 0 node(s), including 0 DDIO, 0 PLL, 0 transceiver and 0 LCELL
 Warning (21074): Design contains 2 input pin(s) that do not drive logic
-    Warning (15610): No output dependent on input pin "SW[8]" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 35
-    Warning (15610): No output dependent on input pin "SW[9]" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 35
-Info (21057): Implemented 1771 device resources after synthesis - the final resource count might be different
+    Warning (15610): No output dependent on input pin "SW[8]" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 36
+    Warning (15610): No output dependent on input pin "SW[9]" File: D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/Prime_Finder_16bit_Top_Group55.vhd Line: 36
+Info (21057): Implemented 1843 device resources after synthesis - the final resource count might be different
     Info (21058): Implemented 13 input pins
     Info (21059): Implemented 52 output pins
-    Info (21061): Implemented 1704 logic cells
+    Info (21061): Implemented 1776 logic cells
     Info (21062): Implemented 2 DSP elements
 Info: Quartus Prime Analysis & Synthesis was successful. 0 errors, 7 warnings
-    Info: Peak virtual memory: 4892 megabytes
-    Info: Processing ended: Thu Dec 11 03:05:44 2025
-    Info: Elapsed time: 00:00:26
-    Info: Total CPU time (on all processors): 00:00:46
+    Info: Peak virtual memory: 4898 megabytes
+    Info: Processing ended: Thu Dec 11 03:21:18 2025
+    Info: Elapsed time: 00:00:14
+    Info: Total CPU time (on all processors): 00:00:21
 
 

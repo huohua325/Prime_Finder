@@ -7,6 +7,7 @@
 --   2. 6k±1 Optimization - Only test divisors 2, 3, then 6k±1 forms
 --   3. Pipeline structure - Multi-stage division with CLA subtractor
 --   4. Square root termination - Stop when divisor² > N
+--   5. PARALLEL DIVISION - Two CLA dividers test ÷2 and ÷3 simultaneously
 --
 -- PERFORMANCE DISPLAY:
 --   HEX5-HEX4: Total Division Count (00-99)
@@ -61,9 +62,8 @@ architecture rtl of Prime_Finder_16bit_Top_Group55 is
         WAIT_LOW,       -- Wait for low 8-bit input
         INIT_CHECK,     -- Initialize prime checking
         CHECK_SPECIAL,  -- Check special cases (0, 1, 2, 3)
-        CHECK_DIV2,     -- Check divisibility by 2
-        CHECK_DIV3,     -- Check divisibility by 3 (using CLA division)
-        DIV3_COMPUTE,   -- Computing division by 3
+        PARALLEL_DIV23, -- PARALLEL: Test ÷2 and ÷3 simultaneously!
+        PARALLEL_WAIT,  -- Wait for both parallel divisions to complete
         NEXT_6K,        -- Compute next 6k±1 divisor
         CHECK_6K_M1,    -- Check divisibility by 6k-1 
         DIV_6KM1_COMP,  -- Computing division by 6k-1
@@ -113,7 +113,24 @@ architecture rtl of Prime_Finder_16bit_Top_Group55 is
     signal GC         : std_logic_vector(4 downto 0);   -- Group Carry
 
     ---------------------------------------------------------------------------
-    -- Division Signals (using repeated CLA subtraction)
+    -- CLA2 Subtractor Signals (16-bit) - SECOND PARALLEL DIVIDER
+    ---------------------------------------------------------------------------
+    signal cla2_a      : std_logic_vector(15 downto 0);  -- Minuend
+    signal cla2_b      : std_logic_vector(15 downto 0);  -- Subtrahend
+    signal cla2_diff   : std_logic_vector(15 downto 0);  -- Result
+    signal cla2_borrow : std_logic;                       -- Borrow flag
+    
+    -- CLA2 internal signals
+    signal Bn2        : std_logic_vector(15 downto 0);  -- NOT(B)
+    signal G2         : std_logic_vector(15 downto 0);  -- Generate
+    signal P2         : std_logic_vector(15 downto 0);  -- Propagate
+    signal C2         : std_logic_vector(16 downto 0);  -- Carry chain
+    signal GG2        : std_logic_vector(3 downto 0);   -- Group Generate
+    signal GP2        : std_logic_vector(3 downto 0);   -- Group Propagate
+    signal GC2        : std_logic_vector(4 downto 0);   -- Group Carry
+
+    ---------------------------------------------------------------------------
+    -- Division Signals - DIVIDER 1 (using repeated CLA subtraction)
     ---------------------------------------------------------------------------
     signal div_dividend   : std_logic_vector(15 downto 0) := (others => '0');  -- Current dividend (remainder)
     signal div_divisor    : std_logic_vector(15 downto 0) := x"0001";          -- Current divisor (init to 1 to avoid div-by-0)
@@ -121,6 +138,16 @@ architecture rtl of Prime_Finder_16bit_Top_Group55 is
     signal div_computing  : std_logic := '0';                                   -- Division in progress
     signal div_done       : std_logic := '0';                                   -- Division complete
     signal div_remainder  : std_logic_vector(15 downto 0) := (others => '0');  -- Final remainder
+
+    ---------------------------------------------------------------------------
+    -- Division Signals - DIVIDER 2 (PARALLEL)
+    ---------------------------------------------------------------------------
+    signal div2_dividend  : std_logic_vector(15 downto 0) := (others => '0');
+    signal div2_divisor   : std_logic_vector(15 downto 0) := x"0001";
+    signal div2_quotient  : std_logic_vector(15 downto 0) := (others => '0');
+    signal div2_computing : std_logic := '0';
+    signal div2_done      : std_logic := '0';
+    signal div2_remainder : std_logic_vector(15 downto 0) := (others => '0');
 
     ---------------------------------------------------------------------------
     -- Prime Check Signals
@@ -260,10 +287,82 @@ begin
 
     ---------------------------------------------------------------------------
     -- CLA Input Connections (continuous assignment for combinatorial logic)
-    -- The CLA always computes: div_dividend - div_divisor
+    -- CLA1 always computes: div_dividend - div_divisor
     ---------------------------------------------------------------------------
     cla_a <= div_dividend;
     cla_b <= div_divisor;
+
+    ---------------------------------------------------------------------------
+    -- CLA2: Second 16-bit CLA Subtractor (for PARALLEL division)
+    ---------------------------------------------------------------------------
+    -- Step 1: Bitwise NOT of B
+    Bn2 <= not cla2_b;
+    
+    -- Step 2: Generate and Propagate
+    GEN_GP2: for i in 0 to 15 generate
+        G2(i) <= cla2_a(i) and Bn2(i);
+        P2(i) <= cla2_a(i) xor Bn2(i);
+    end generate;
+    
+    -- Step 3: Group Generate and Propagate
+    GG2(0) <= G2(3) or (P2(3) and G2(2)) or (P2(3) and P2(2) and G2(1)) 
+                    or (P2(3) and P2(2) and P2(1) and G2(0));
+    GP2(0) <= P2(3) and P2(2) and P2(1) and P2(0);
+    
+    GG2(1) <= G2(7) or (P2(7) and G2(6)) or (P2(7) and P2(6) and G2(5)) 
+                    or (P2(7) and P2(6) and P2(5) and G2(4));
+    GP2(1) <= P2(7) and P2(6) and P2(5) and P2(4);
+    
+    GG2(2) <= G2(11) or (P2(11) and G2(10)) or (P2(11) and P2(10) and G2(9)) 
+                     or (P2(11) and P2(10) and P2(9) and G2(8));
+    GP2(2) <= P2(11) and P2(10) and P2(9) and P2(8);
+    
+    GG2(3) <= G2(15) or (P2(15) and G2(14)) or (P2(15) and P2(14) and G2(13)) 
+                     or (P2(15) and P2(14) and P2(13) and G2(12));
+    GP2(3) <= P2(15) and P2(14) and P2(13) and P2(12);
+    
+    -- Step 4: Group Carry
+    GC2(0) <= '1';
+    GC2(1) <= GG2(0) or (GP2(0) and GC2(0));
+    GC2(2) <= GG2(1) or (GP2(1) and GG2(0)) or (GP2(1) and GP2(0) and GC2(0));
+    GC2(3) <= GG2(2) or (GP2(2) and GG2(1)) or (GP2(2) and GP2(1) and GG2(0)) 
+                     or (GP2(2) and GP2(1) and GP2(0) and GC2(0));
+    GC2(4) <= GG2(3) or (GP2(3) and GG2(2)) or (GP2(3) and GP2(2) and GG2(1))
+                     or (GP2(3) and GP2(2) and GP2(1) and GG2(0))
+                     or (GP2(3) and GP2(2) and GP2(1) and GP2(0) and GC2(0));
+    
+    -- Step 5: Intra-group carries
+    C2(0)  <= GC2(0);
+    C2(1)  <= G2(0) or (P2(0) and C2(0));
+    C2(2)  <= G2(1) or (P2(1) and G2(0)) or (P2(1) and P2(0) and C2(0));
+    C2(3)  <= G2(2) or (P2(2) and G2(1)) or (P2(2) and P2(1) and G2(0)) 
+                    or (P2(2) and P2(1) and P2(0) and C2(0));
+    C2(4)  <= GC2(1);
+    C2(5)  <= G2(4) or (P2(4) and C2(4));
+    C2(6)  <= G2(5) or (P2(5) and G2(4)) or (P2(5) and P2(4) and C2(4));
+    C2(7)  <= G2(6) or (P2(6) and G2(5)) or (P2(6) and P2(5) and G2(4)) 
+                    or (P2(6) and P2(5) and P2(4) and C2(4));
+    C2(8)  <= GC2(2);
+    C2(9)  <= G2(8) or (P2(8) and C2(8));
+    C2(10) <= G2(9) or (P2(9) and G2(8)) or (P2(9) and P2(8) and C2(8));
+    C2(11) <= G2(10) or (P2(10) and G2(9)) or (P2(10) and P2(9) and G2(8)) 
+                     or (P2(10) and P2(9) and P2(8) and C2(8));
+    C2(12) <= GC2(3);
+    C2(13) <= G2(12) or (P2(12) and C2(12));
+    C2(14) <= G2(13) or (P2(13) and G2(12)) or (P2(13) and P2(12) and C2(12));
+    C2(15) <= G2(14) or (P2(14) and G2(13)) or (P2(14) and P2(13) and G2(12)) 
+                     or (P2(14) and P2(13) and P2(12) and C2(12));
+    C2(16) <= GC2(4);
+    
+    -- Step 6: Compute difference
+    cla2_diff <= P2 xor C2(15 downto 0);
+    
+    -- Step 7: Borrow detection
+    cla2_borrow <= not C2(16);
+    
+    -- CLA2 Input Connections (for divider 2)
+    cla2_a <= div2_dividend;
+    cla2_b <= div2_divisor;
 
     ---------------------------------------------------------------------------
     -- Key Synchronization and Debounce
@@ -373,61 +472,70 @@ begin
                         is_prime <= '1';
                         main_state <= SHOW_RESULT;
                     else
-                        main_state <= CHECK_DIV2;
+                        main_state <= PARALLEL_DIV23;  -- Start parallel ÷2 and ÷3
                     end if;
                 
                 -----------------------------------------------------------------
-                -- CHECK DIVISIBILITY BY 2 (bit check - no division needed)
+                -- PARALLEL DIVISION: Test ÷2 and ÷3 SIMULTANEOUSLY!
+                -- CLA1 does ÷2 (using bit check), CLA2 does ÷3 (real division)
                 -----------------------------------------------------------------
-                when CHECK_DIV2 =>
-                    div_count <= div_count + 1;  -- Count this as one division test
+                when PARALLEL_DIV23 =>
+                    -- Start both divisions in parallel
+                    div_count <= div_count + 2;  -- Count both divisions
                     
+                    -- Divider 1: Check ÷2 using LSB (instant)
                     if n_reg(0) = '0' then
-                        -- Even number > 2 is not prime
-                        is_prime <= '0';
-                        main_state <= SHOW_RESULT;
+                        div_done <= '1';  -- Divisible by 2
+                        div_remainder <= x"0000";
                     else
-                        main_state <= CHECK_DIV3;
+                        div_done <= '1';  -- Not divisible by 2
+                        div_remainder <= x"0001";  -- Remainder = 1
                     end if;
+                    
+                    -- Divider 2: Start ÷3 using CLA2
+                    div2_dividend <= n_reg;
+                    div2_divisor <= x"0003";
+                    div2_quotient <= x"0000";
+                    div2_computing <= '1';
+                    
+                    main_state <= PARALLEL_WAIT;
                 
-                -----------------------------------------------------------------
-                -- CHECK DIVISIBILITY BY 3 (using CLA division)
-                -----------------------------------------------------------------
-                when CHECK_DIV3 =>
-                    -- Initialize division: N / 3
-                    div_dividend <= n_reg;
-                    div_divisor <= x"0003";
-                    div_quotient <= x"0000";
-                    div_computing <= '1';
-                    div_count <= div_count + 1;
-                    main_state <= DIV3_COMPUTE;
-                
-                when DIV3_COMPUTE =>
-                    -- REAL division using CLA subtractor
-                    -- cla_a and cla_b are continuously assigned to div_dividend and div_divisor
-                    if div_computing = '1' then
-                        if cla_borrow = '0' then
+                when PARALLEL_WAIT =>
+                    -- PARALLEL: Both dividers running simultaneously!
+                    
+                    -- Update CLA2 division (÷3)
+                    if div2_computing = '1' then
+                        if cla2_borrow = '0' then
                             -- Can subtract: dividend >= divisor
-                            div_dividend <= cla_diff;
-                            div_quotient <= div_quotient + 1;
+                            div2_dividend <= cla2_diff;
+                            div2_quotient <= div2_quotient + 1;
                             -- COUNT REAL SUBTRACTION!
                             if sub_count < 99999 then
                                 sub_count <= sub_count + 1;
                             end if;
                         else
                             -- Cannot subtract: division complete
-                            div_computing <= '0';
-                            div_remainder <= div_dividend;
-                            
-                            -- Check if remainder is 0 (divisible)
-                            if div_dividend = x"0000" then
-                                is_prime <= '0';
-                                main_state <= SHOW_RESULT;
-                            else
-                                -- Not divisible by 3, start 6k±1 check
-                                k_value <= x"0001";
-                                main_state <= NEXT_6K;
-                            end if;
+                            div2_computing <= '0';
+                            div2_remainder <= div2_dividend;
+                        end if;
+                    end if;
+                    
+                    -- Check if BOTH divisions are complete
+                    if div_done = '1' and div2_computing = '0' then
+                        -- Check results
+                        if div_remainder = x"0000" then
+                            -- Divisible by 2
+                            is_prime <= '0';
+                            main_state <= SHOW_RESULT;
+                        elsif div2_dividend = x"0000" then
+                            -- Divisible by 3
+                            is_prime <= '0';
+                            main_state <= SHOW_RESULT;
+                        else
+                            -- Not divisible by 2 or 3, start 6k±1 check
+                            div_done <= '0';  -- Reset for next use
+                            k_value <= x"0001";
+                            main_state <= NEXT_6K;
                         end if;
                     end if;
                 
@@ -612,8 +720,8 @@ begin
                 HEX1 <= seg7_encode(data_high(3 downto 0));
                 HEX0 <= "1111111";
             
-            when INIT_CHECK | CHECK_SPECIAL | CHECK_DIV2 | CHECK_DIV3 |
-                 DIV3_COMPUTE | NEXT_6K | CHECK_6K_M1 | DIV_6KM1_COMP |
+            when INIT_CHECK | CHECK_SPECIAL | PARALLEL_DIV23 | PARALLEL_WAIT |
+                 NEXT_6K | CHECK_6K_M1 | DIV_6KM1_COMP |
                  CHECK_6K_P1 | DIV_6KP1_COMP | CHECK_SQRT =>
                 -- Computing: show "----" and current counts
                 HEX5 <= "0111111";  -- -
