@@ -28,7 +28,8 @@ architecture sim of CLA_Pipeline_tb_Group55 is
             Load      : in  std_logic;
             Quotient  : out std_logic_vector(3 downto 0);
             Remainder : out std_logic_vector(3 downto 0);
-            Done      : out std_logic
+            Done      : out std_logic;
+            Sub_Count : out std_logic_vector(3 downto 0)
         );
     end component;
     
@@ -43,7 +44,8 @@ architecture sim of CLA_Pipeline_tb_Group55 is
             Load      : in  std_logic;
             Quotient  : out std_logic_vector(3 downto 0);
             Remainder : out std_logic_vector(3 downto 0);
-            Done      : out std_logic
+            Done      : out std_logic;
+            Sub_Count : out std_logic_vector(3 downto 0)
         );
     end component;
 
@@ -58,10 +60,12 @@ architecture sim of CLA_Pipeline_tb_Group55 is
     -- CLA版本输出
     signal Q_CLA, R_CLA : std_logic_vector(3 downto 0);
     signal Done_CLA     : std_logic;
+    signal SC_CLA       : std_logic_vector(3 downto 0);  -- Sub_Count (NEW)
     
     -- RipSub版本输出
     signal Q_Rip, R_Rip : std_logic_vector(3 downto 0);
     signal Done_Rip     : std_logic;
+    signal SC_Rip       : std_logic_vector(3 downto 0);  -- Sub_Count (NEW)
     
     -- 时钟周期
     constant CLK_PERIOD : time := 20 ns;
@@ -83,7 +87,8 @@ begin
         Load      => Load,
         Quotient  => Q_CLA,
         Remainder => R_CLA,
-        Done      => Done_CLA
+        Done      => Done_CLA,
+        Sub_Count => SC_CLA
     );
     
     ---------------------------------------------------------------------------
@@ -96,7 +101,8 @@ begin
         Load      => Load,
         Quotient  => Q_Rip,
         Remainder => R_Rip,
-        Done      => Done_Rip
+        Done      => Done_Rip,
+        Sub_Count => SC_Rip
     );
 
     ---------------------------------------------------------------------------
@@ -171,6 +177,8 @@ begin
                " R " & integer'image(conv_integer(R_CLA)) severity note;
         report "CLA cycles: " & integer'image(cycle_cla) & 
                ", RipSub cycles: " & integer'image(cycle_rip) severity note;
+        report "CLA Sub_Count: " & integer'image(conv_integer(SC_CLA)) &
+               ", RipSub Sub_Count: " & integer'image(conv_integer(SC_Rip)) severity note;
         
         wait for CLK_PERIOD * 5;
         

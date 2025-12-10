@@ -33,7 +33,8 @@ entity LongDivision_4bit_Group55 is
         Load      : in  std_logic;                      -- Load signal (high loads new data)
         Quotient  : out std_logic_vector(3 downto 0);  -- Quotient
         Remainder : out std_logic_vector(3 downto 0);  -- Remainder
-        Done      : out std_logic                       -- Calculation complete flag
+        Done      : out std_logic;                      -- Calculation complete flag
+        Sub_Count : out std_logic_vector(3 downto 0)   -- Subtraction count (NEW: for demo)
     );
 end entity LongDivision_4bit_Group55;
 
@@ -61,6 +62,9 @@ architecture rtl of LongDivision_4bit_Group55 is
     -- State signals
     signal done_i       : std_logic;                      -- Division complete flag (internal)
     signal div_by_zero  : std_logic;                      -- Divide by zero flag
+    
+    -- Subtraction counter (NEW: counts actual RipSub subtractions)
+    signal sub_count_reg : std_logic_vector(3 downto 0) := "0000";
 
 begin
 
@@ -87,6 +91,7 @@ begin
                 reg_dividend <= Dividend;      -- Load dividend
                 reg_divisor  <= Divisor;       -- Load divisor
                 reg_quotient <= "0000";        -- Initialize quotient to 0
+                sub_count_reg <= "0000";       -- Reset subtraction counter (NEW)
                 done_i       <= '0';           -- Reset done flag
                 
                 -- Check divide by zero
@@ -106,6 +111,8 @@ begin
                         -- Can subtract: Update remainder, quotient +1
                         reg_dividend <= sub_result;
                         reg_quotient <= reg_quotient + 1;  -- Counter increment (allowed to use +)
+                        -- COUNT REAL RIPSUB SUBTRACTION! (NEW)
+                        sub_count_reg <= sub_count_reg + 1;
                     else
                         -- Cannot subtract: Division complete
                         done_i <= '1';
@@ -126,5 +133,8 @@ begin
     
     -- Done flag output
     Done <= done_i or div_by_zero;
+    
+    -- Subtraction count output (NEW)
+    Sub_Count <= sub_count_reg;
 
 end architecture rtl;

@@ -27,7 +27,8 @@ entity Prime_Finder_6k1_Group55 is
         Load         : in  std_logic;                      -- Load signal
         Is_Prime     : out std_logic;                      -- Prime flag
         Done         : out std_logic;                      -- Detection complete flag
-        Div_Count    : out std_logic_vector(3 downto 0)   -- Division count
+        Div_Count    : out std_logic_vector(3 downto 0);  -- Division count
+        Sub_Count    : out std_logic_vector(7 downto 0)   -- Total subtraction count (NEW)
     );
 end entity Prime_Finder_6k1_Group55;
 
@@ -62,7 +63,8 @@ architecture rtl of Prime_Finder_6k1_Group55 is
             Load      : in  std_logic;
             Quotient  : out std_logic_vector(3 downto 0);
             Remainder : out std_logic_vector(3 downto 0);
-            Done      : out std_logic
+            Done      : out std_logic;
+            Sub_Count : out std_logic_vector(3 downto 0)
         );
     end component;
 
@@ -86,6 +88,10 @@ architecture rtl of Prime_Finder_6k1_Group55 is
     -- Division count register
     signal div_count_reg : std_logic_vector(3 downto 0) := "0000";
     
+    -- Subtraction count from divider (NEW)
+    signal div_sub_count : std_logic_vector(3 downto 0);
+    signal total_sub_count : std_logic_vector(7 downto 0) := "00000000";
+    
     -- Output registers
     signal is_prime_reg : std_logic := '0';
     signal done_reg : std_logic := '0';
@@ -102,7 +108,8 @@ begin
         Load      => div_load,
         Quotient  => open,
         Remainder => div_remainder,
-        Done      => div_done
+        Done      => div_done,
+        Sub_Count => div_sub_count
     );
 
     ---------------------------------------------------------------------------
@@ -123,6 +130,7 @@ begin
                     if Load = '1' then
                         N_reg <= N;
                         div_count_reg <= "0000";
+                        total_sub_count <= "00000000";  -- Reset subtraction count
                         state <= CHECK_SPECIAL;
                     end if;
                 
@@ -149,6 +157,7 @@ begin
                 when WAIT_DIV_2 =>
                     if div_done = '1' then
                         div_count_reg <= div_count_reg + 1;
+                        total_sub_count <= total_sub_count + ("0000" & div_sub_count);  -- Accumulate
                         if div_remainder = "0000" then
                             -- Divisible by 2, not prime
                             state <= DONE_NOT_PRIME;
@@ -166,6 +175,7 @@ begin
                 when WAIT_DIV_3 =>
                     if div_done = '1' then
                         div_count_reg <= div_count_reg + 1;
+                        total_sub_count <= total_sub_count + ("0000" & div_sub_count);  -- Accumulate
                         if div_remainder = "0000" then
                             -- Divisible by 3, not prime
                             state <= DONE_NOT_PRIME;
@@ -196,6 +206,7 @@ begin
                 when WAIT_DIV_6K =>
                     if div_done = '1' then
                         div_count_reg <= div_count_reg + 1;
+                        total_sub_count <= total_sub_count + ("0000" & div_sub_count);  -- Accumulate
                         if div_remainder = "0000" then
                             -- Divisible, not prime
                             state <= DONE_NOT_PRIME;
@@ -246,5 +257,6 @@ begin
     Is_Prime <= is_prime_reg;
     Done <= done_reg;
     Div_Count <= div_count_reg;
+    Sub_Count <= total_sub_count;  -- Output total subtraction count
 
 end architecture rtl;

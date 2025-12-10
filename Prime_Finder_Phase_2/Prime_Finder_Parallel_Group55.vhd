@@ -23,7 +23,8 @@ entity Prime_Finder_Parallel_Group55 is
         CLK       : in  std_logic;                      -- Clock signal
         Load      : in  std_logic;                      -- Load signal
         Is_Prime  : out std_logic;                      -- Prime flag
-        Done      : out std_logic                       -- Detection complete flag
+        Done      : out std_logic;                      -- Detection complete flag
+        Sub_Count : out std_logic_vector(7 downto 0)   -- Total subtraction count (NEW)
     );
 end entity Prime_Finder_Parallel_Group55;
 
@@ -40,7 +41,8 @@ architecture rtl of Prime_Finder_Parallel_Group55 is
             Load      : in  std_logic;
             Quotient  : out std_logic_vector(3 downto 0);
             Remainder : out std_logic_vector(3 downto 0);
-            Done      : out std_logic
+            Done      : out std_logic;
+            Sub_Count : out std_logic_vector(3 downto 0)
         );
     end component;
 
@@ -61,6 +63,10 @@ architecture rtl of Prime_Finder_Parallel_Group55 is
     
     -- Latched input value for judgment
     signal N_reg : std_logic_vector(3 downto 0);
+    
+    -- Subtraction counts from each divider (NEW)
+    signal SC2, SC3, SC5 : std_logic_vector(3 downto 0);
+    signal total_sub : std_logic_vector(7 downto 0);
 
 begin
 
@@ -76,7 +82,8 @@ begin
         Load      => Load,
         Quotient  => open,    -- Quotient not needed
         Remainder => R2,      -- Only care about remainder
-        Done      => Done2
+        Done      => Done2,
+        Sub_Count => SC2      -- Subtraction count
     );
     
     -- Divider 2: N ÷ 3
@@ -87,7 +94,8 @@ begin
         Load      => Load,
         Quotient  => open,
         Remainder => R3,
-        Done      => Done3
+        Done      => Done3,
+        Sub_Count => SC3      -- Subtraction count
     );
     
     -- Divider 3: N ÷ 5
@@ -98,8 +106,12 @@ begin
         Load      => Load,
         Quotient  => open,
         Remainder => R5,
-        Done      => Done5
+        Done      => Done5,
+        Sub_Count => SC5      -- Subtraction count
     );
+    
+    -- Total subtraction count (sum of all 3 dividers)
+    total_sub <= ("0000" & SC2) + ("0000" & SC3) + ("0000" & SC5);
 
     ---------------------------------------------------------------------------
     -- Latch Input Value
@@ -158,5 +170,6 @@ begin
     end process;
     
     Is_Prime <= is_prime_internal;
+    Sub_Count <= total_sub;  -- Output total subtraction count
 
 end architecture rtl;

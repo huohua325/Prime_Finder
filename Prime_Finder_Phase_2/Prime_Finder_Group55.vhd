@@ -61,7 +61,8 @@ architecture rtl of Prime_Finder_Group55 is
             Load      : in  std_logic;
             Quotient  : out std_logic_vector(3 downto 0);
             Remainder : out std_logic_vector(3 downto 0);
-            Done      : out std_logic
+            Done      : out std_logic;
+            Sub_Count : out std_logic_vector(3 downto 0)
         );
     end component;
 
@@ -89,7 +90,8 @@ begin
         Load      => Load,
         Quotient  => div_quotient,
         Remainder => div_remainder,
-        Done      => open  -- Phase 1 does not use Done signal
+        Done      => open,     -- Phase 1 does not use Done signal
+        Sub_Count => open      -- Phase 1 does not use Sub_Count signal
     );
 
     ---------------------------------------------------------------------------

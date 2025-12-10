@@ -90,8 +90,19 @@
 
 | 文件名 | 修改内容 |
 |--------|----------|
-| `LongDivision_4bit_Group55.vhd` | 添加 `Done` 输出端口 |
-| `Prime_Finder_Group55.vhd` | 更新 component 声明以匹配 Done 信号 |
+| `LongDivision_4bit_Group55.vhd` | 添加 `Done` 和 `Sub_Count` 输出端口 |
+| `Prime_Finder_Group55.vhd` | 更新 component 声明以匹配新信号 |
+
+### 3.4 新增性能计数器
+
+所有除法器和优化模块现在都输出 `Sub_Count` 信号，用于显示真实的减法次数：
+
+| 模块 | Sub_Count 位宽 | 说明 |
+|------|:--------------:|------|
+| `LongDivision_4bit_Group55` | 4位 | 单次除法的减法次数 |
+| `LongDivision_CLA_Pipeline_Group55` | 4位 | 单次除法的CLA减法次数 |
+| `Prime_Finder_Parallel_Group55` | 8位 | 3个除法器的减法总和 |
+| `Prime_Finder_6k1_Group55` | 8位 | 所有除法的减法累计 |
 
 ---
 
@@ -129,6 +140,7 @@
 | `N` | 4 | IN | 待检测的数 |
 | `Done` | 1 | OUT | 检测完成标志 |
 | `Is_Prime` | 1 | OUT | 质数结果 (1=是质数) |
+| `Sub_Count` | 8 | OUT | **减法总次数 (新增)** |
 | `Done2/Done3/Done5` | 1 | 内部 | 各除法器完成标志 |
 
 ---
@@ -350,6 +362,7 @@ A[3] B[3]  A[2] B[2]  ...           A[3:0]  B[3:0]
 | `N` | 0111 (7) | 1001 (9) | 输入值正确 |
 | `Done` | 1 | 1 | 两次都完成 |
 | `Is_Prime` | **1** | **0** | 7是质数，9不是 |
+| `Sub_Count` | 9 | 8 | **减法总次数** |
 | `cycle_count` | 5 | 5 | 并行执行周期相同 |
 
 #### 并行验证关键观察点
@@ -404,10 +417,13 @@ Done2 先变'1'，过几个周期后 Done3 变'1'，再过几个周期 Done5 变
 |------|:--------:|:-----------:|------|
 | **Done 变1时间** | 100 ns | 140 ns | CLA 快 40ns |
 | **cycle 计数** | **3** | **5** | CLA 少 2 周期 |
+| **Sub_Count** | **2** | **2** | 减法次数相同 |
 | **Q (商)** | 0010 (2) | 0010 (2) | 结果相同 ✓ |
 | **R (余数)** | 0001 (1) | 0001 (1) | 结果相同 ✓ |
 
 **验证成功标志**: `Done_CLA` 在 `Done_Rip` 之前变为 '1'，且 `cycle_cla < cycle_rip`
+
+> **注意**: Sub_Count 相同说明CLA和RipSub执行相同数量的减法，但CLA每次减法更快
 
 #### Quartus 波形数据对照表 - Part 2 流水线 (7,8,9 连续÷3)
 
@@ -495,6 +511,7 @@ Done2 先变'1'，过几个周期后 Done3 变'1'，再过几个周期 Done5 变
 |------|:----------:|:----------:|----------|
 | `N` | 1101 (13) | 1001 (9) | 输入正确 |
 | `Div_Count` | **0010 (2)** | **0010 (2)** | **关键! 只有2次除法** |
+| `Sub_Count` | **10** | **7** | **减法总次数** |
 | `Done` | 1 | 1 | 两次都完成 |
 | `Is_Prime` | **1** | **0** | 13是质数，9不是 |
 
@@ -676,9 +693,9 @@ run -all
 
 | 优化 | 展示内容 | 时长 |
 |:----:|----------|:----:|
-| 1 | ModelSim 波形: Done2/Done3/Done5 同时变化 | 45秒 |
-| 2 | ModelSim 波形: Done_CLA vs Done_Rip 时间差 + cycle 计数 | 60秒 |
-| 3 | ModelSim 波形: Div_Count 最终值对比 | 60秒 |
+| 1 | ModelSim 波形: Done2/Done3/Done5 同时变化 + Sub_Count | 45秒 |
+| 2 | ModelSim 波形: Done_CLA vs Done_Rip 时间差 + Sub_Count对比 | 60秒 |
+| 3 | ModelSim 波形: Div_Count + Sub_Count 最终值对比 | 60秒 |
 | 4 | 开发板操作: 输入 17 和 257 验证 | 90秒 |
 
 ---

@@ -26,7 +26,8 @@ architecture sim of Parallel_tb_Group55 is
             CLK       : in  std_logic;
             Load      : in  std_logic;
             Is_Prime  : out std_logic;
-            Done      : out std_logic
+            Done      : out std_logic;
+            Sub_Count : out std_logic_vector(7 downto 0)
         );
     end component;
 
@@ -38,6 +39,7 @@ architecture sim of Parallel_tb_Group55 is
     signal N         : std_logic_vector(3 downto 0) := "0000";
     signal Is_Prime  : std_logic;
     signal Done      : std_logic;
+    signal Sub_Count : std_logic_vector(7 downto 0);  -- 减法计数 (NEW)
     
     -- 时钟周期
     constant CLK_PERIOD : time := 20 ns;  -- 50MHz
@@ -51,11 +53,12 @@ begin
     -- 实例化被测模块
     ---------------------------------------------------------------------------
     UUT: Prime_Finder_Parallel_Group55 port map(
-        N        => N,
-        CLK      => CLK,
-        Load     => Load,
-        Is_Prime => Is_Prime,
-        Done     => Done
+        N         => N,
+        CLK       => CLK,
+        Load      => Load,
+        Is_Prime  => Is_Prime,
+        Done      => Done,
+        Sub_Count => Sub_Count
     );
 
     ---------------------------------------------------------------------------
@@ -109,7 +112,8 @@ begin
         assert Is_Prime = '1' 
             report "FAIL: N=7 should be prime, got Is_Prime=0" 
             severity error;
-        report "Test 1 PASSED: N=7 is prime, cycles=" & integer'image(cycle_count) 
+        report "Test 1 PASSED: N=7 is prime, cycles=" & integer'image(cycle_count) &
+               ", Sub_Count=" & integer'image(conv_integer(Sub_Count))
             severity note;
         
         wait for CLK_PERIOD * 5;
@@ -132,7 +136,8 @@ begin
         assert Is_Prime = '0' 
             report "FAIL: N=9 should not be prime, got Is_Prime=1" 
             severity error;
-        report "Test 2 PASSED: N=9 is not prime, cycles=" & integer'image(cycle_count) 
+        report "Test 2 PASSED: N=9 is not prime, cycles=" & integer'image(cycle_count) &
+               ", Sub_Count=" & integer'image(conv_integer(Sub_Count))
             severity note;
         
         wait for CLK_PERIOD * 5;

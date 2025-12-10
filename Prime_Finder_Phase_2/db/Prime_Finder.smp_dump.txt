@@ -1,7 +1,17 @@
 
-State Machine - |Prime_Finder_16bit_Top_Group55|state
-Name state.SHOW_RESULT state.COMPUTING state.WAIT_LOW state.WAIT_HIGH 
-state.WAIT_HIGH 0 0 0 0 
-state.WAIT_LOW 0 0 1 1 
-state.COMPUTING 0 1 0 1 
-state.SHOW_RESULT 1 0 0 1 
+State Machine - |Prime_Finder_16bit_Top_Group55|main_state
+Name main_state.SHOW_RESULT main_state.CHECK_SQRT main_state.DIV_6KP1_COMP main_state.CHECK_6K_P1 main_state.DIV_6KM1_COMP main_state.CHECK_6K_M1 main_state.NEXT_6K main_state.DIV3_COMPUTE main_state.CHECK_DIV3 main_state.CHECK_DIV2 main_state.CHECK_SPECIAL main_state.INIT_CHECK main_state.WAIT_LOW main_state.WAIT_HIGH 
+main_state.WAIT_HIGH 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+main_state.WAIT_LOW 0 0 0 0 0 0 0 0 0 0 0 0 1 1 
+main_state.INIT_CHECK 0 0 0 0 0 0 0 0 0 0 0 1 0 1 
+main_state.CHECK_SPECIAL 0 0 0 0 0 0 0 0 0 0 1 0 0 1 
+main_state.CHECK_DIV2 0 0 0 0 0 0 0 0 0 1 0 0 0 1 
+main_state.CHECK_DIV3 0 0 0 0 0 0 0 0 1 0 0 0 0 1 
+main_state.DIV3_COMPUTE 0 0 0 0 0 0 0 1 0 0 0 0 0 1 
+main_state.NEXT_6K 0 0 0 0 0 0 1 0 0 0 0 0 0 1 
+main_state.CHECK_6K_M1 0 0 0 0 0 1 0 0 0 0 0 0 0 1 
+main_state.DIV_6KM1_COMP 0 0 0 0 1 0 0 0 0 0 0 0 0 1 
+main_state.CHECK_6K_P1 0 0 0 1 0 0 0 0 0 0 0 0 0 1 
+main_state.DIV_6KP1_COMP 0 0 1 0 0 0 0 0 0 0 0 0 0 1 
+main_state.CHECK_SQRT 0 1 0 0 0 0 0 0 0 0 0 0 0 1 
+main_state.SHOW_RESULT 1 0 0 0 0 0 0 0 0 0 0 0 0 1 

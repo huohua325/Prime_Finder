@@ -24,7 +24,8 @@ entity LongDivision_CLA_Pipeline_Group55 is
         Load      : in  std_logic;                      -- Load signal
         Quotient  : out std_logic_vector(3 downto 0);  -- Quotient
         Remainder : out std_logic_vector(3 downto 0);  -- Remainder
-        Done      : out std_logic                       -- Done flag
+        Done      : out std_logic;                      -- Done flag
+        Sub_Count : out std_logic_vector(3 downto 0)   -- Subtraction count (NEW: for demo)
     );
 end entity LongDivision_CLA_Pipeline_Group55;
 
@@ -58,6 +59,9 @@ architecture rtl of LongDivision_CLA_Pipeline_Group55 is
     signal computing    : std_logic := '0';
     signal done_internal: std_logic := '0';
     signal div_by_zero  : std_logic := '0';
+    
+    -- Subtraction counter (NEW: counts actual CLA subtractions)
+    signal sub_count_reg : std_logic_vector(3 downto 0) := "0000";
 
 begin
 
@@ -132,6 +136,7 @@ begin
                 reg_dividend <= s1_dividend;
                 reg_divisor <= s1_divisor;
                 reg_quotient <= "0000";
+                sub_count_reg <= "0000";  -- Reset subtraction counter
                 computing <= '1';
                 done_internal <= '0';
                 s1_valid <= '0';
@@ -145,6 +150,8 @@ begin
                     -- Subtraction valid: update remainder, quotient +1
                     reg_dividend <= cla_diff;
                     reg_quotient <= reg_quotient + 1;
+                    -- COUNT REAL CLA SUBTRACTION!
+                    sub_count_reg <= sub_count_reg + 1;
                 else
                     -- Cannot subtract: finish
                     done_internal <= '1';
@@ -174,5 +181,6 @@ begin
     Quotient <= reg_quotient when div_by_zero = '0' else "1111";
     Remainder <= reg_dividend when div_by_zero = '0' else s1_dividend;
     Done <= done_internal;
+    Sub_Count <= sub_count_reg;  -- Output actual subtraction count
 
 end architecture rtl;

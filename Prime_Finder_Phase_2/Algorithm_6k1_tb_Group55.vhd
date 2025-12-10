@@ -27,7 +27,8 @@ architecture sim of Algorithm_6k1_tb_Group55 is
             Load         : in  std_logic;
             Is_Prime     : out std_logic;
             Done         : out std_logic;
-            Div_Count    : out std_logic_vector(3 downto 0)
+            Div_Count    : out std_logic_vector(3 downto 0);
+            Sub_Count    : out std_logic_vector(7 downto 0)
         );
     end component;
 
@@ -40,6 +41,7 @@ architecture sim of Algorithm_6k1_tb_Group55 is
     signal Is_Prime  : std_logic;
     signal Done      : std_logic;
     signal Div_Count : std_logic_vector(3 downto 0);
+    signal Sub_Count : std_logic_vector(7 downto 0);  -- 减法计数 (NEW)
     
     -- 时钟周期
     constant CLK_PERIOD : time := 20 ns;
@@ -55,7 +57,8 @@ begin
         Load      => Load,
         Is_Prime  => Is_Prime,
         Done      => Done,
-        Div_Count => Div_Count
+        Div_Count => Div_Count,
+        Sub_Count => Sub_Count
     );
 
     ---------------------------------------------------------------------------
@@ -102,7 +105,8 @@ begin
             severity error;
         
         report "Test 1 Result: Is_Prime=" & std_logic'image(Is_Prime) & 
-               ", Div_Count=" & integer'image(conv_integer(Div_Count))
+               ", Div_Count=" & integer'image(conv_integer(Div_Count)) &
+               ", Sub_Count=" & integer'image(conv_integer(Sub_Count))
             severity note;
         
         -- 验证除法次数 (应该是2次: 测试2和3)
@@ -134,7 +138,8 @@ begin
             severity error;
         
         report "Test 2 Result: Is_Prime=" & std_logic'image(Is_Prime) & 
-               ", Div_Count=" & integer'image(conv_integer(Div_Count))
+               ", Div_Count=" & integer'image(conv_integer(Div_Count)) &
+               ", Sub_Count=" & integer'image(conv_integer(Sub_Count))
             severity note;
         
         wait for CLK_PERIOD * 5;
