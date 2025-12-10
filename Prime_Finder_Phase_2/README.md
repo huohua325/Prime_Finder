@@ -296,43 +296,12 @@ A[3] B[3]  A[2] B[2]  ...           A[3:0]  B[3:0]
 
 ### 5.1 运行仿真的方法
 
-#### 各 Testbench 对应的 Top Entity 设置
-
-运行不同 testbench 前，需在 Quartus 中设置对应的 Top Entity：
-
-| Testbench 文件 | Top Entity 设置 | 验证的优化 |
-|----------------|-----------------|------------|
-| `Parallel_tb_Group55.vhd` | `Parallel_tb_Group55` | 优化1: 并行除法器 |
-| `CLA_Pipeline_tb_Group55.vhd` | `CLA_Pipeline_tb_Group55` | 优化2: CLA+流水线 |
-| `Algorithm_6k1_tb_Group55.vhd` | `Algorithm_6k1_tb_Group55` | 优化3: 6k±1算法 |
-| `Extend_16bit_tb_Group55.vhd` | `Extend_16bit_tb_Group55` | 优化4: 16位扩展 |
-
-**设置方法**:
-1. 在 Quartus 中: `Assignments` → `Settings` → `General` → `Top-level entity`
-2. 输入对应的 testbench entity 名称
-3. 点击 OK 保存
-
-或者在 ModelSim 中直接运行（无需修改 Quartus 设置）:
-```tcl
-vsim work.parallel_tb_group55        # 运行优化1测试
-vsim work.cla_pipeline_tb_group55    # 运行优化2测试
-vsim work.algorithm_6k1_tb_group55   # 运行优化3测试
-vsim work.extend_16bit_tb_group55    # 运行优化4测试
-```
 
 #### 方法1: ModelSim 图形界面
 
 1. 打开 Quartus 项目
 2. 菜单: `Tools` → `Run Simulation Tool` → `RTL Simulation`
 3. 在 ModelSim 中选择对应的 testbench entity 运行
-
-#### 方法2: 使用 DO 脚本 (推荐)
-
-```tcl
-# 在 ModelSim Transcript 窗口执行:
-cd {D:/intelFPGA_lite/18.1/project/Prime_Finder/simulation/modelsim}
-do run_testbench.do
-```
 
 ---
 
