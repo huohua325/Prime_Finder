@@ -1,6 +1,6 @@
 --------------------------------------------------------------------------------
 -- Testbench: LongDivision_4bit_Group55
--- 测试4位除法器的关键用例
+-- Test key cases of the 4-bit divider
 --------------------------------------------------------------------------------
 
 library IEEE;
@@ -12,7 +12,7 @@ end entity LongDivision_4bit_tb;
 
 architecture test of LongDivision_4bit_tb is
 
-    -- 被测模块
+    -- Unit Under Test
     component LongDivision_4bit_Group55 is
         port(
             Dividend  : in  std_logic_vector(3 downto 0);
@@ -24,7 +24,7 @@ architecture test of LongDivision_4bit_tb is
         );
     end component;
 
-    -- 测试信号
+    -- Test signals
     signal Dividend_tb  : std_logic_vector(3 downto 0) := "0000";
     signal Divisor_tb   : std_logic_vector(3 downto 0) := "0001";
     signal CLK_tb       : std_logic := '0';
@@ -32,12 +32,12 @@ architecture test of LongDivision_4bit_tb is
     signal Quotient_tb  : std_logic_vector(3 downto 0);
     signal Remainder_tb : std_logic_vector(3 downto 0);
 
-    -- 时钟周期
+    -- Clock period
     constant CLK_PERIOD : time := 20 ns;
 
 begin
 
-    -- 实例化被测模块
+    -- Instantiate Unit Under Test
     UUT: LongDivision_4bit_Group55 port map(
         Dividend  => Dividend_tb,
         Divisor   => Divisor_tb,
@@ -47,40 +47,40 @@ begin
         Remainder => Remainder_tb
     );
 
-    -- 时钟生成
+    -- Clock generation
     CLK_GEN: process
     begin
         CLK_tb <= '0'; wait for CLK_PERIOD/2;
         CLK_tb <= '1'; wait for CLK_PERIOD/2;
     end process CLK_GEN;
 
-    -- 测试过程 (精简版 - 4个典型例子，适合视频展示)
-    -- 总时间约 800ns
+    -- Test process (simplified version - 4 typical examples, suitable for video demo)
+    -- Total time approximately 800ns
     STIM: process
     begin
-        wait for CLK_PERIOD * 2;  -- 40ns 初始化
+        wait for CLK_PERIOD * 2;  -- 40ns initialization
         
-        -- 测试1: 15 / 3 = 5 余 0 (整除)
+        -- Test 1: 15 / 3 = 5 remainder 0 (exact division)
         Dividend_tb <= "1111"; Divisor_tb <= "0011";
         Load_tb <= '1'; wait for CLK_PERIOD;
         Load_tb <= '0'; wait for CLK_PERIOD * 10;
         
-        -- 测试2: 7 / 2 = 3 余 1 (有余数)
+        -- Test 2: 7 / 2 = 3 remainder 1 (with remainder)
         Dividend_tb <= "0111"; Divisor_tb <= "0010";
         Load_tb <= '1'; wait for CLK_PERIOD;
         Load_tb <= '0'; wait for CLK_PERIOD * 8;
         
-        -- 测试3: 5 / 7 = 0 余 5 (被除数<除数)
+        -- Test 3: 5 / 7 = 0 remainder 5 (dividend < divisor)
         Dividend_tb <= "0101"; Divisor_tb <= "0111";
         Load_tb <= '1'; wait for CLK_PERIOD;
         Load_tb <= '0'; wait for CLK_PERIOD * 6;
         
-        -- 测试4: 8 / 0 = 15 余 8 (除以零)
+        -- Test 4: 8 / 0 = 15 remainder 8 (divide by zero)
         Dividend_tb <= "1000"; Divisor_tb <= "0000";
         Load_tb <= '1'; wait for CLK_PERIOD;
         Load_tb <= '0'; wait for CLK_PERIOD * 6;
         
-        -- 测试完成
+        -- Test complete
         wait;
     end process STIM;
 

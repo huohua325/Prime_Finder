@@ -1,6 +1,6 @@
 --------------------------------------------------------------------------------
 -- Testbench: RipSub_4bit_Group55
--- 测试4位减法器的关键用例
+-- Test key cases of the 4-bit subtractor
 --------------------------------------------------------------------------------
 
 library IEEE;
@@ -12,7 +12,7 @@ end entity RipSub_4bit_tb;
 
 architecture test of RipSub_4bit_tb is
 
-    -- 被测模块
+    -- Unit Under Test
     component RipSub_4bit_Group55 is
         port(
             A    : in  std_logic_vector(3 downto 0);
@@ -22,14 +22,14 @@ architecture test of RipSub_4bit_tb is
         );
     end component;
 
-    -- 测试信号
+    -- Test signals
     signal A_tb, B_tb   : std_logic_vector(3 downto 0) := "0000";
     signal Diff_tb      : std_logic_vector(3 downto 0);
     signal Bout_tb      : std_logic;
 
 begin
 
-    -- 实例化被测模块
+    -- Instantiate Unit Under Test
     UUT: RipSub_4bit_Group55 port map(
         A    => A_tb,
         B    => B_tb,
@@ -37,23 +37,23 @@ begin
         Bout => Bout_tb
     );
 
-    -- 测试过程 (精简版 - 4个典型例子，适合视频展示)
-    -- 总时间约 100ns
+    -- Test process (simplified version - 4 typical examples, suitable for video demo)
+    -- Total time approximately 100ns
     STIM: process
     begin
-        -- 测试1: 10 - 7 = 3, Bout=0 (正常减法)
+        -- Test 1: 10 - 7 = 3, Bout=0 (normal subtraction)
         A_tb <= "1010"; B_tb <= "0111"; wait for 20 ns;
         
-        -- 测试2: 3 - 5 = 14, Bout=1 (有借位/下溢)
+        -- Test 2: 3 - 5 = 14, Bout=1 (borrow/underflow)
         A_tb <= "0011"; B_tb <= "0101"; wait for 20 ns;
         
-        -- 测试3: 15 - 15 = 0, Bout=0 (相等)
+        -- Test 3: 15 - 15 = 0, Bout=0 (equal)
         A_tb <= "1111"; B_tb <= "1111"; wait for 20 ns;
         
-        -- 测试4: 0 - 1 = 15, Bout=1 (边界下溢)
+        -- Test 4: 0 - 1 = 15, Bout=1 (boundary underflow)
         A_tb <= "0000"; B_tb <= "0001"; wait for 20 ns;
         
-        -- 测试完成
+        -- Test complete
         wait;
     end process STIM;
 

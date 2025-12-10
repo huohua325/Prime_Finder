@@ -1,19 +1,19 @@
 --------------------------------------------------------------------------------
--- 模块名称: Prime_Finder_6k1_Group55
--- 功能描述: 使用6k±1算法的自动质数检测器
--- 优化类型: 阶段2优化3 - 数学优化
+-- Module Name: Prime_Finder_6k1_Group55
+-- Description: Automatic prime detector using 6k±1 algorithm
+-- Optimization: Phase 2 Optimization 3 - Mathematical optimization
 -- 
--- 原理:
---   所有大于3的质数都可以写成 6k±1 的形式
---   因此只需测试: 2, 3, 然后是 5, 7, 11, 13... (6k±1序列)
---   相比测试所有数，大幅减少除法次数
+-- Principle:
+--   All primes greater than 3 can be written as 6k±1
+--   Therefore only need to test: 2, 3, then 5, 7, 11, 13... (6k±1 sequence)
+--   Significantly reduces division count compared to testing all numbers
 --
--- 算法:
---   1. N < 2 -> 不是质数
---   2. N = 2 或 3 -> 是质数
---   3. N % 2 = 0 -> 不是质数
---   4. N % 3 = 0 -> 不是质数
---   5. 测试 6k±1 形式的除数 (5, 7, 11, 13...)，直到除数 >= N
+-- Algorithm:
+--   1. N < 2 -> Not prime
+--   2. N = 2 or 3 -> Is prime
+--   3. N % 2 = 0 -> Not prime
+--   4. N % 3 = 0 -> Not prime
+--   5. Test divisors in 6k±1 form (5, 7, 11, 13...) until divisor >= N
 --------------------------------------------------------------------------------
 
 library IEEE;
@@ -22,37 +22,37 @@ use IEEE.std_logic_unsigned.all;
 
 entity Prime_Finder_6k1_Group55 is
     port(
-        N            : in  std_logic_vector(3 downto 0);  -- 待检测的数 (0-15)
-        CLK          : in  std_logic;                      -- 时钟信号
-        Load         : in  std_logic;                      -- 加载信号
-        Is_Prime     : out std_logic;                      -- 质数标志
-        Done         : out std_logic;                      -- 检测完成标志
-        Div_Count    : out std_logic_vector(3 downto 0)   -- 除法次数计数器
+        N            : in  std_logic_vector(3 downto 0);  -- Number to check (0-15)
+        CLK          : in  std_logic;                      -- Clock signal
+        Load         : in  std_logic;                      -- Load signal
+        Is_Prime     : out std_logic;                      -- Prime flag
+        Done         : out std_logic;                      -- Detection complete flag
+        Div_Count    : out std_logic_vector(3 downto 0)   -- Division count
     );
 end entity Prime_Finder_6k1_Group55;
 
 architecture rtl of Prime_Finder_6k1_Group55 is
 
     ---------------------------------------------------------------------------
-    -- 状态机定义
+    -- State Machine Definition
     ---------------------------------------------------------------------------
     type state_type is (
-        IDLE,           -- 空闲，等待Load
-        CHECK_SPECIAL,  -- 检查特殊情况 (0, 1, 2, 3)
-        START_DIV_2,    -- 开始测试÷2
-        WAIT_DIV_2,     -- 等待÷2完成
-        START_DIV_3,    -- 开始测试÷3
-        WAIT_DIV_3,     -- 等待÷3完成
-        GEN_6K,         -- 生成下一个6k±1除数
-        START_DIV_6K,   -- 开始测试÷(6k±1)
-        WAIT_DIV_6K,    -- 等待÷(6k±1)完成
-        DONE_PRIME,     -- 结果: 是质数
-        DONE_NOT_PRIME  -- 结果: 不是质数
+        IDLE,           -- Idle, waiting for Load
+        CHECK_SPECIAL,  -- Check special cases (0, 1, 2, 3)
+        START_DIV_2,    -- Start test ÷2
+        WAIT_DIV_2,     -- Wait for ÷2 to complete
+        START_DIV_3,    -- Start test ÷3
+        WAIT_DIV_3,     -- Wait for ÷3 to complete
+        GEN_6K,         -- Generate next 6k±1 divisor
+        START_DIV_6K,   -- Start test ÷(6k±1)
+        WAIT_DIV_6K,    -- Wait for ÷(6k±1) to complete
+        DONE_PRIME,     -- Result: Is prime
+        DONE_NOT_PRIME  -- Result: Not prime
     );
     signal state : state_type := IDLE;
 
     ---------------------------------------------------------------------------
-    -- 子模块声明: 复用阶段1的除法器
+    -- Submodule Declaration: Reuse Phase 1 divider
     ---------------------------------------------------------------------------
     component LongDivision_4bit_Group55 is
         port(
@@ -67,33 +67,33 @@ architecture rtl of Prime_Finder_6k1_Group55 is
     end component;
 
     ---------------------------------------------------------------------------
-    -- 内部信号
+    -- Internal Signals
     ---------------------------------------------------------------------------
-    -- 锁存的输入值
+    -- Latched input value
     signal N_reg : std_logic_vector(3 downto 0);
     
-    -- 当前除数
+    -- Current divisor
     signal current_divisor : std_logic_vector(3 downto 0);
     
-    -- 除法器控制信号
+    -- Divider control signals
     signal div_load : std_logic := '0';
     signal div_done : std_logic;
     signal div_remainder : std_logic_vector(3 downto 0);
     
-    -- 6k±1生成器
-    signal test_minus : std_logic;  -- '1'=测6k-1, '0'=测6k+1
+    -- 6k±1 generator
+    signal test_minus : std_logic;  -- '1'=test 6k-1, '0'=test 6k+1
     
-    -- 除法次数计数器
+    -- Division count register
     signal div_count_reg : std_logic_vector(3 downto 0) := "0000";
     
-    -- 输出寄存器
+    -- Output registers
     signal is_prime_reg : std_logic := '0';
     signal done_reg : std_logic := '0';
 
 begin
 
     ---------------------------------------------------------------------------
-    -- 实例化除法器 (复用)
+    -- Instantiate Divider (Reuse)
     ---------------------------------------------------------------------------
     DIVIDER: LongDivision_4bit_Group55 port map(
         Dividend  => N_reg,
@@ -106,17 +106,17 @@ begin
     );
 
     ---------------------------------------------------------------------------
-    -- 主状态机
+    -- Main State Machine
     ---------------------------------------------------------------------------
     FSM_PROC: process(CLK)
     begin
         if rising_edge(CLK) then
-            -- 默认值
+            -- Default values
             div_load <= '0';
             
             case state is
                 ---------------------------------------------------------------
-                -- 空闲状态
+                -- Idle State
                 ---------------------------------------------------------------
                 when IDLE =>
                     done_reg <= '0';
@@ -127,33 +127,33 @@ begin
                     end if;
                 
                 ---------------------------------------------------------------
-                -- 检查特殊情况
+                -- Check Special Cases
                 ---------------------------------------------------------------
                 when CHECK_SPECIAL =>
                     if N_reg < "0010" then
-                        -- N = 0 或 1，不是质数
+                        -- N = 0 or 1, not prime
                         state <= DONE_NOT_PRIME;
                     elsif N_reg = "0010" or N_reg = "0011" then
-                        -- N = 2 或 3，是质数
+                        -- N = 2 or 3, is prime
                         state <= DONE_PRIME;
                     else
-                        -- 开始测试÷2
+                        -- Start test ÷2
                         current_divisor <= "0010";
                         div_load <= '1';
                         state <= WAIT_DIV_2;
                     end if;
                 
                 ---------------------------------------------------------------
-                -- 等待÷2完成
+                -- Wait for ÷2 to Complete
                 ---------------------------------------------------------------
                 when WAIT_DIV_2 =>
                     if div_done = '1' then
                         div_count_reg <= div_count_reg + 1;
                         if div_remainder = "0000" then
-                            -- 能被2整除，不是质数
+                            -- Divisible by 2, not prime
                             state <= DONE_NOT_PRIME;
                         else
-                            -- 继续测试÷3
+                            -- Continue test ÷3
                             current_divisor <= "0011";
                             div_load <= '1';
                             state <= WAIT_DIV_3;
@@ -161,52 +161,52 @@ begin
                     end if;
                 
                 ---------------------------------------------------------------
-                -- 等待÷3完成
+                -- Wait for ÷3 to Complete
                 ---------------------------------------------------------------
                 when WAIT_DIV_3 =>
                     if div_done = '1' then
                         div_count_reg <= div_count_reg + 1;
                         if div_remainder = "0000" then
-                            -- 能被3整除，不是质数
+                            -- Divisible by 3, not prime
                             state <= DONE_NOT_PRIME;
                         else
-                            -- 开始6k±1序列，从5开始 (6×1-1=5)
+                            -- Start 6k±1 sequence, from 5 (6×1-1=5)
                             current_divisor <= "0101";
-                            test_minus <= '0';  -- 下一个是6k+1
+                            test_minus <= '0';  -- Next is 6k+1
                             state <= GEN_6K;
                         end if;
                     end if;
                 
                 ---------------------------------------------------------------
-                -- 生成下一个6k±1除数
+                -- Generate Next 6k±1 Divisor
                 ---------------------------------------------------------------
                 when GEN_6K =>
                     if current_divisor >= N_reg then
-                        -- 除数已经大于等于N，测试完毕，是质数
+                        -- Divisor >= N, test complete, is prime
                         state <= DONE_PRIME;
                     else
-                        -- 开始除法
+                        -- Start division
                         div_load <= '1';
                         state <= WAIT_DIV_6K;
                     end if;
                 
                 ---------------------------------------------------------------
-                -- 等待÷(6k±1)完成
+                -- Wait for ÷(6k±1) to Complete
                 ---------------------------------------------------------------
                 when WAIT_DIV_6K =>
                     if div_done = '1' then
                         div_count_reg <= div_count_reg + 1;
                         if div_remainder = "0000" then
-                            -- 能被整除，不是质数
+                            -- Divisible, not prime
                             state <= DONE_NOT_PRIME;
                         else
-                            -- 生成下一个6k±1
+                            -- Generate next 6k±1
                             if test_minus = '0' then
-                                -- 当前是6k-1，下一个是6k+1 (加2)
+                                -- Current is 6k-1, next is 6k+1 (add 2)
                                 current_divisor <= current_divisor + 2;
                                 test_minus <= '1';
                             else
-                                -- 当前是6k+1，下一个是6(k+1)-1 (加4)
+                                -- Current is 6k+1, next is 6(k+1)-1 (add 4)
                                 current_divisor <= current_divisor + 4;
                                 test_minus <= '0';
                             end if;
@@ -215,7 +215,7 @@ begin
                     end if;
                 
                 ---------------------------------------------------------------
-                -- 结果: 是质数
+                -- Result: Is Prime
                 ---------------------------------------------------------------
                 when DONE_PRIME =>
                     is_prime_reg <= '1';
@@ -225,7 +225,7 @@ begin
                     end if;
                 
                 ---------------------------------------------------------------
-                -- 结果: 不是质数
+                -- Result: Not Prime
                 ---------------------------------------------------------------
                 when DONE_NOT_PRIME =>
                     is_prime_reg <= '0';
@@ -241,7 +241,7 @@ begin
     end process FSM_PROC;
 
     ---------------------------------------------------------------------------
-    -- 输出赋值
+    -- Output Assignment
     ---------------------------------------------------------------------------
     Is_Prime <= is_prime_reg;
     Done <= done_reg;

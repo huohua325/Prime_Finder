@@ -1,11 +1,11 @@
 --------------------------------------------------------------------------------
--- 模块名称: RipSub_8bit_Group55
--- 功能描述: 8位纹波减法器，级联两个4位减法器
--- 优化类型: 阶段2优化4的支撑模块
+-- Module Name: RipSub_8bit_Group55
+-- Description: 8-bit ripple subtractor, implemented by cascading two 4-bit subtractors
+-- Optimization: Phase 2 Optimization 4 - Basic component for internal divider optimization
 -- 
--- 原理:
---   复用阶段1的RipSub_4bit_Group55
---   低4位减法的借位传递给高4位
+-- Principle:
+--   Reuses RipSub_4bit_Group55 module
+--   Low 4-bit subtractor borrow output connects to high 4-bit subtractor borrow input
 --------------------------------------------------------------------------------
 
 library IEEE;
@@ -14,17 +14,17 @@ use IEEE.std_logic_unsigned.all;
 
 entity RipSub_8bit_Group55 is
     port(
-        A    : in  std_logic_vector(7 downto 0);  -- 被减数
-        B    : in  std_logic_vector(7 downto 0);  -- 减数
-        Diff : out std_logic_vector(7 downto 0);  -- 差
-        Bout : out std_logic                       -- 借位输出
+        A    : in  std_logic_vector(7 downto 0);  -- Minuend (8-bit)
+        B    : in  std_logic_vector(7 downto 0);  -- Subtrahend (8-bit)
+        Diff : out std_logic_vector(7 downto 0);  -- Difference (A - B)
+        Bout : out std_logic                       -- Borrow output
     );
 end entity RipSub_8bit_Group55;
 
 architecture structural of RipSub_8bit_Group55 is
 
     ---------------------------------------------------------------------------
-    -- 子模块声明: 复用4位减法器
+    -- Submodule Declaration: 4-bit subtractor
     ---------------------------------------------------------------------------
     component RipSub_4bit_Group55 is
         port(
@@ -36,13 +36,13 @@ architecture structural of RipSub_8bit_Group55 is
     end component;
 
     ---------------------------------------------------------------------------
-    -- 内部信号
+    -- Internal Signals
     ---------------------------------------------------------------------------
-    signal borrow_low  : std_logic;  -- 低4位的借位
+    signal borrow_low  : std_logic;  -- Low 4-bit borrow
     signal diff_low    : std_logic_vector(3 downto 0);
     signal diff_high   : std_logic_vector(3 downto 0);
     
-    -- 高位减法需要考虑低位借位
+    -- High bit subtraction needs to consider low bit borrow
     signal B_high_adj  : std_logic_vector(3 downto 0);
     signal borrow_adj  : std_logic;
     signal diff_adj    : std_logic_vector(3 downto 0);
@@ -50,7 +50,7 @@ architecture structural of RipSub_8bit_Group55 is
 begin
 
     ---------------------------------------------------------------------------
-    -- 低4位减法器
+    -- Low 4-bit Subtractor
     ---------------------------------------------------------------------------
     SUB_LOW: RipSub_4bit_Group55 port map(
         A    => A(3 downto 0),
@@ -60,9 +60,9 @@ begin
     );
 
     ---------------------------------------------------------------------------
-    -- 高4位减法器 (需要减去低位借位)
-    -- 实现: A_high - B_high - borrow_low
-    -- 方法: 先 A_high - B_high，再根据borrow_low调整
+    -- High 4-bit Subtractor (needs to subtract low bit borrow)
+    -- Implementation: A_high - B_high - borrow_low
+    -- Method: First A_high - B_high, then adjust according to borrow_low
     ---------------------------------------------------------------------------
     SUB_HIGH: RipSub_4bit_Group55 port map(
         A    => A(7 downto 4),
@@ -71,23 +71,23 @@ begin
         Bout => borrow_adj
     );
     
-    -- 如果低位有借位，高位结果需要减1
-    -- 使用另一个减法器处理借位
+    -- If low bit has borrow, high bit result needs to subtract 1
+    -- Use another subtractor to handle borrow
     SUB_BORROW: RipSub_4bit_Group55 port map(
         A    => diff_high,
-        B    => "000" & borrow_low,  -- 减去0或1
+        B    => "000" & borrow_low,  -- Subtract 0 or 1
         Diff => diff_adj,
-        Bout => open  -- 暂时忽略
+        Bout => open  -- Temporarily ignore
     );
 
     ---------------------------------------------------------------------------
-    -- 输出
+    -- Output
     ---------------------------------------------------------------------------
     Diff(3 downto 0) <= diff_low;
     Diff(7 downto 4) <= diff_adj;
     
-    -- 最终借位: 高位有借位，或者 (高位结果为0且低位有借位)
-    -- 使用nor判断diff_high是否全为0，避免直接向量比较
+    -- Final borrow: High bit has borrow, or (high bit result is 0 and low bit has borrow)
+    -- Use nor to judge if diff_high is all 0, avoid direct vector comparison
     Bout <= borrow_adj or (borrow_low and not (diff_high(3) or diff_high(2) or diff_high(1) or diff_high(0)));
 
 end architecture structural;

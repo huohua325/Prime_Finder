@@ -38,7 +38,7 @@
 
 set_global_assignment -name FAMILY "MAX 10"
 set_global_assignment -name DEVICE 10M50DAF484C7G
-set_global_assignment -name TOP_LEVEL_ENTITY Prime_Finder_Parallel_Group55
+set_global_assignment -name TOP_LEVEL_ENTITY Prime_Finder_16bit_Top_Group55
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 18.1.0
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "17:27:16  DECEMBER 08, 2025"
 set_global_assignment -name LAST_QUARTUS_VERSION "18.1.0 Lite Edition"
@@ -72,6 +72,10 @@ set_location_assignment PIN_A13 -to SW[6]
 set_location_assignment PIN_A14 -to SW[7]
 set_location_assignment PIN_B14 -to SW[8]
 set_location_assignment PIN_F15 -to SW[9]
+
+# Push Buttons (directly active 0 when pressed - active low)
+set_location_assignment PIN_B8 -to KEY[0]
+set_location_assignment PIN_A7 -to KEY[1]
 
 # LEDs (accent LED when 1 is written)
 set_location_assignment PIN_A8 -to LEDR[0]
@@ -178,11 +182,16 @@ set_global_assignment -name VHDL_FILE RipSub_4bit_Group55.vhd
 set_global_assignment -name VHDL_FILE LongDivision_4bit_Group55.vhd
 set_global_assignment -name VHDL_FILE Prime_Finder_Group55.vhd
 set_global_assignment -name VHDL_FILE Prime_Finder_Top_Group55.vhd
+set_global_assignment -name EDA_TEST_BENCH_FILE Parallel_tb_Group55.vhd -section_id Parallel_tb_Group55
+set_global_assignment -name EDA_TEST_BENCH_FILE CLA_Pipeline_tb_Group55.vhd -section_id CLA_Pipeline_tb_Group55
+set_global_assignment -name EDA_TEST_BENCH_FILE Algorithm_6k1_tb_Group55.vhd -section_id Algorithm_6k1_tb_Group55
+set_global_assignment -name EDA_TEST_BENCH_FILE Extend_16bit_tb_Group55.vhd -section_id Extend_16bit_tb_Group55
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to MAX10_CLK1_50
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SW[*]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to KEY[*]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LEDR[*]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX0[*]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX1[*]
@@ -190,8 +199,4 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX2[*]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX3[*]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX4[*]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX5[*]
-set_global_assignment -name EDA_TEST_BENCH_FILE Parallel_tb_Group55.vhd -section_id Parallel_tb_Group55
-set_global_assignment -name EDA_TEST_BENCH_FILE CLA_Pipeline_tb_Group55.vhd -section_id CLA_Pipeline_tb_Group55
-set_global_assignment -name EDA_TEST_BENCH_FILE Algorithm_6k1_tb_Group55.vhd -section_id Algorithm_6k1_tb_Group55
-set_global_assignment -name EDA_TEST_BENCH_FILE Extend_16bit_tb_Group55.vhd -section_id Extend_16bit_tb_Group55
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

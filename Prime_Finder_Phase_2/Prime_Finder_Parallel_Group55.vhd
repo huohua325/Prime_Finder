@@ -1,16 +1,16 @@
 --------------------------------------------------------------------------------
--- 模块名称: Prime_Finder_Parallel_Group55
--- 功能描述: 并行质数检测器，同时使用3个除法器测试÷2, ÷3, ÷5
--- 优化类型: 阶段2优化1 - 并行除法器
+-- Module Name: Prime_Finder_Parallel_Group55
+-- Description: Parallel prime detector, using 3 dividers to test ÷2, ÷3, ÷5 simultaneously
+-- Optimization: Phase 2 Optimization 1 - Parallel dividers
 -- 
--- 原理:
---   阶段1只有1个除法器，需要串行测试每个除数
---   本模块实例化3个独立的除法器，同时测试3个除数
---   利用FPGA硬件并行特性，速度提升约3倍
+-- Principle:
+--   Phase 1 has only 1 divider, needs to test each divisor serially
+--   This module instantiates 3 independent dividers, testing 3 divisors simultaneously
+--   Utilizes FPGA hardware parallelism, speed improves ~3x
 --
--- 适用范围:
---   对于4位数(0-15)，只需测试2, 3, 5三个除数即可判断质数
---   因为 sqrt(15) ≈ 3.87，所以只需测试不超过4的质数
+-- Applicable Range:
+--   For 4-bit numbers (0-15), only need to test divisors 2, 3, 5 to determine primality
+--   Because sqrt(15) ≈ 3.87, only need to test primes not exceeding 4
 --------------------------------------------------------------------------------
 
 library IEEE;
@@ -19,18 +19,18 @@ use IEEE.std_logic_unsigned.all;
 
 entity Prime_Finder_Parallel_Group55 is
     port(
-        N         : in  std_logic_vector(3 downto 0);  -- 待检测的数 (0-15)
-        CLK       : in  std_logic;                      -- 时钟信号
-        Load      : in  std_logic;                      -- 加载信号
-        Is_Prime  : out std_logic;                      -- 质数标志
-        Done      : out std_logic                       -- 检测完成标志
+        N         : in  std_logic_vector(3 downto 0);  -- Number to check (0-15)
+        CLK       : in  std_logic;                      -- Clock signal
+        Load      : in  std_logic;                      -- Load signal
+        Is_Prime  : out std_logic;                      -- Prime flag
+        Done      : out std_logic                       -- Detection complete flag
     );
 end entity Prime_Finder_Parallel_Group55;
 
 architecture rtl of Prime_Finder_Parallel_Group55 is
 
     ---------------------------------------------------------------------------
-    -- 子模块声明: 复用阶段1的除法器
+    -- Submodule Declaration: Reuse Phase 1 divider
     ---------------------------------------------------------------------------
     component LongDivision_4bit_Group55 is
         port(
@@ -45,44 +45,44 @@ architecture rtl of Prime_Finder_Parallel_Group55 is
     end component;
 
     ---------------------------------------------------------------------------
-    -- 内部信号
+    -- Internal Signals
     ---------------------------------------------------------------------------
-    -- 3个除法器的余数输出
+    -- Remainder outputs from 3 dividers
     signal R2, R3, R5 : std_logic_vector(3 downto 0);
     
-    -- 3个除法器的完成标志
+    -- Done flags from 3 dividers
     signal Done2, Done3, Done5 : std_logic;
     
-    -- 所有除法器完成标志
+    -- All dividers complete flag
     signal all_done : std_logic;
     
-    -- 质数判断结果
+    -- Prime determination result
     signal is_prime_internal : std_logic;
     
-    -- 锁存输入值用于判断
+    -- Latched input value for judgment
     signal N_reg : std_logic_vector(3 downto 0);
 
 begin
 
     ---------------------------------------------------------------------------
-    -- 并行实例化3个除法器
+    -- Instantiate 3 dividers in parallel
     ---------------------------------------------------------------------------
     
-    -- 除法器1: N ÷ 2
+    -- Divider 1: N ÷ 2
     DIV_BY_2: LongDivision_4bit_Group55 port map(
         Dividend  => N,
-        Divisor   => "0010",  -- 除数 = 2
+        Divisor   => "0010",  -- Divisor = 2
         CLK       => CLK,
         Load      => Load,
-        Quotient  => open,    -- 商不需要
-        Remainder => R2,      -- 只关心余数
+        Quotient  => open,    -- Quotient not needed
+        Remainder => R2,      -- Only care about remainder
         Done      => Done2
     );
     
-    -- 除法器2: N ÷ 3
+    -- Divider 2: N ÷ 3
     DIV_BY_3: LongDivision_4bit_Group55 port map(
         Dividend  => N,
-        Divisor   => "0011",  -- 除数 = 3
+        Divisor   => "0011",  -- Divisor = 3
         CLK       => CLK,
         Load      => Load,
         Quotient  => open,
@@ -90,10 +90,10 @@ begin
         Done      => Done3
     );
     
-    -- 除法器3: N ÷ 5
+    -- Divider 3: N ÷ 5
     DIV_BY_5: LongDivision_4bit_Group55 port map(
         Dividend  => N,
-        Divisor   => "0101",  -- 除数 = 5
+        Divisor   => "0101",  -- Divisor = 5
         CLK       => CLK,
         Load      => Load,
         Quotient  => open,
@@ -102,7 +102,7 @@ begin
     );
 
     ---------------------------------------------------------------------------
-    -- 锁存输入值
+    -- Latch Input Value
     ---------------------------------------------------------------------------
     process(CLK)
     begin
@@ -114,45 +114,45 @@ begin
     end process;
 
     ---------------------------------------------------------------------------
-    -- 完成标志: 所有除法器都完成
+    -- Done Flag: All dividers complete
     ---------------------------------------------------------------------------
     all_done <= Done2 and Done3 and Done5;
     Done <= all_done;
 
     ---------------------------------------------------------------------------
-    -- 质数判断逻辑
+    -- Prime Determination Logic
     ---------------------------------------------------------------------------
-    -- 规则:
-    --   N < 2       -> 不是质数 (0, 1)
-    --   N = 2       -> 是质数 (特殊处理，因为2÷2=0余0)
-    --   N = 3       -> 是质数 (特殊处理，因为3÷3=0余0)
-    --   N = 5       -> 是质数 (特殊处理，因为5÷5=0余0)
-    --   R2=0且N>2   -> 能被2整除，不是质数
-    --   R3=0且N>3   -> 能被3整除，不是质数
-    --   R5=0且N>5   -> 能被5整除，不是质数
-    --   其他        -> 是质数
+    -- Rules:
+    --   N < 2       -> Not prime (0, 1)
+    --   N = 2       -> Is prime (special case, since 2÷2=0 remainder 0)
+    --   N = 3       -> Is prime (special case, since 3÷3=0 remainder 0)
+    --   N = 5       -> Is prime (special case, since 5÷5=0 remainder 0)
+    --   R2=0 and N>2 -> Divisible by 2, not prime
+    --   R3=0 and N>3 -> Divisible by 3, not prime
+    --   R5=0 and N>5 -> Divisible by 5, not prime
+    --   Otherwise   -> Is prime
     
     process(N_reg, R2, R3, R5, all_done)
     begin
         if all_done = '0' then
-            is_prime_internal <= '0';  -- 计算中，暂时输出0
+            is_prime_internal <= '0';  -- Computing, temporarily output 0
         elsif N_reg < "0010" then
-            -- N = 0 或 1，不是质数
+            -- N = 0 or 1, not prime
             is_prime_internal <= '0';
         elsif N_reg = "0010" or N_reg = "0011" or N_reg = "0101" then
-            -- N = 2, 3, 5 是质数
+            -- N = 2, 3, 5 are prime
             is_prime_internal <= '1';
         elsif R2 = "0000" then
-            -- 能被2整除，不是质数 (4, 6, 8, 10, 12, 14)
+            -- Divisible by 2, not prime (4, 6, 8, 10, 12, 14)
             is_prime_internal <= '0';
         elsif R3 = "0000" then
-            -- 能被3整除，不是质数 (6, 9, 12, 15)
+            -- Divisible by 3, not prime (6, 9, 12, 15)
             is_prime_internal <= '0';
         elsif R5 = "0000" then
-            -- 能被5整除，不是质数 (10, 15)
+            -- Divisible by 5, not prime (10, 15)
             is_prime_internal <= '0';
         else
-            -- 不能被2, 3, 5整除，是质数 (7, 11, 13)
+            -- Not divisible by 2, 3, 5, is prime (7, 11, 13)
             is_prime_internal <= '1';
         end if;
     end process;

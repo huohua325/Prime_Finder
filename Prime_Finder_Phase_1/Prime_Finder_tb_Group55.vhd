@@ -1,14 +1,14 @@
 --------------------------------------------------------------------------------
 -- Testbench: Prime_Finder_Group55
--- 测试质数判断器
+-- Test prime number detector
 -- 
--- 测试方法:
---   新的质数判断逻辑基于除法器的商和余数
---   需要测试不同的被除数和除数组合，验证:
---   1. 除法结果正确
---   2. 当找到因子时 Is_Prime=0
---   3. 当没找到因子时 Is_Prime=1
---   4. 特殊情况 (0, 1) 处理正确
+-- Test Method:
+--   New prime detection logic based on divider's quotient and remainder
+--   Need to test different dividend and divisor combinations to verify:
+--   1. Division results are correct
+--   2. When factor found, Is_Prime=0
+--   3. When no factor found, Is_Prime=1
+--   4. Special cases (0, 1) handled correctly
 --------------------------------------------------------------------------------
 
 library IEEE;
@@ -20,7 +20,7 @@ end entity Prime_Finder_tb;
 
 architecture test of Prime_Finder_tb is
 
-    -- 被测模块
+    -- Unit Under Test
     component Prime_Finder_Group55 is
         port(
             Dividend  : in  std_logic_vector(3 downto 0);
@@ -33,7 +33,7 @@ architecture test of Prime_Finder_tb is
         );
     end component;
 
-    -- 测试信号
+    -- Test signals
     signal Dividend_tb : std_logic_vector(3 downto 0) := "0000";
     signal Divisor_tb  : std_logic_vector(3 downto 0) := "0010";
     signal CLK_tb      : std_logic := '0';
@@ -42,12 +42,12 @@ architecture test of Prime_Finder_tb is
     signal R_out_tb    : std_logic_vector(3 downto 0);
     signal Is_Prime_tb : std_logic;
 
-    -- 时钟周期
+    -- Clock period
     constant CLK_PERIOD : time := 20 ns;
 
 begin
 
-    -- 实例化被测模块
+    -- Instantiate Unit Under Test
     UUT: Prime_Finder_Group55 port map(
         Dividend  => Dividend_tb,
         Divisor   => Divisor_tb,
@@ -58,60 +58,60 @@ begin
         Is_Prime  => Is_Prime_tb
     );
 
-    -- 时钟生成
+    -- Clock generation
     CLK_GEN: process
     begin
         CLK_tb <= '0'; wait for CLK_PERIOD/2;
         CLK_tb <= '1'; wait for CLK_PERIOD/2;
     end process CLK_GEN;
 
-    -- 测试过程 (精简版 - 5个典型例子，适合视频展示)
-    -- 总时间约 1200ns
+    -- Test process (simplified version - 5 typical examples, suitable for video demo)
+    -- Total time approximately 1200ns
     STIM: process
     begin
-        wait for CLK_PERIOD * 2;  -- 40ns 初始化
+        wait for CLK_PERIOD * 2;  -- 40ns initialization
         
         -----------------------------------------------------------------------
-        -- 测试1: 特殊情况 - 1 不是质数
-        -- 期望: Is_Prime = 0
+        -- Test 1: Special case - 1 is not prime
+        -- Expected: Is_Prime = 0
         -----------------------------------------------------------------------
-        Dividend_tb <= "0001"; Divisor_tb <= "0010";  -- 1 ÷ 2
+        Dividend_tb <= "0001"; Divisor_tb <= "0010";  -- 1 / 2
         Load_tb <= '1'; wait for CLK_PERIOD;
         Load_tb <= '0'; wait for CLK_PERIOD * 8;
         
         -----------------------------------------------------------------------
-        -- 测试2: 非质数 6 ÷ 2 = 3 余 0 (找到因子)
-        -- 期望: Q=3, R=0, Is_Prime=0
+        -- Test 2: Non-prime 6 / 2 = 3 remainder 0 (factor found)
+        -- Expected: Q=3, R=0, Is_Prime=0
         -----------------------------------------------------------------------
-        Dividend_tb <= "0110"; Divisor_tb <= "0010";  -- 6 ÷ 2
+        Dividend_tb <= "0110"; Divisor_tb <= "0010";  -- 6 / 2
         Load_tb <= '1'; wait for CLK_PERIOD;
         Load_tb <= '0'; wait for CLK_PERIOD * 8;
         
         -----------------------------------------------------------------------
-        -- 测试3: 质数 7 ÷ 2 = 3 余 1 (不能整除)
-        -- 期望: Q=3, R=1, Is_Prime=1
+        -- Test 3: Prime 7 / 2 = 3 remainder 1 (not divisible)
+        -- Expected: Q=3, R=1, Is_Prime=1
         -----------------------------------------------------------------------
-        Dividend_tb <= "0111"; Divisor_tb <= "0010";  -- 7 ÷ 2
+        Dividend_tb <= "0111"; Divisor_tb <= "0010";  -- 7 / 2
         Load_tb <= '1'; wait for CLK_PERIOD;
         Load_tb <= '0'; wait for CLK_PERIOD * 8;
         
         -----------------------------------------------------------------------
-        -- 测试4: 非质数 9 ÷ 3 = 3 余 0 (找到因子)
-        -- 期望: Q=3, R=0, Is_Prime=0
+        -- Test 4: Non-prime 9 / 3 = 3 remainder 0 (factor found)
+        -- Expected: Q=3, R=0, Is_Prime=0
         -----------------------------------------------------------------------
-        Dividend_tb <= "1001"; Divisor_tb <= "0011";  -- 9 ÷ 3
+        Dividend_tb <= "1001"; Divisor_tb <= "0011";  -- 9 / 3
         Load_tb <= '1'; wait for CLK_PERIOD;
         Load_tb <= '0'; wait for CLK_PERIOD * 8;
         
         -----------------------------------------------------------------------
-        -- 测试5: 质数 13 ÷ 2 = 6 余 1 (不能整除)
-        -- 期望: Q=6, R=1, Is_Prime=1
+        -- Test 5: Prime 13 / 2 = 6 remainder 1 (not divisible)
+        -- Expected: Q=6, R=1, Is_Prime=1
         -----------------------------------------------------------------------
-        Dividend_tb <= "1101"; Divisor_tb <= "0010";  -- 13 ÷ 2
+        Dividend_tb <= "1101"; Divisor_tb <= "0010";  -- 13 / 2
         Load_tb <= '1'; wait for CLK_PERIOD;
         Load_tb <= '0'; wait for CLK_PERIOD * 10;
         
-        -- 测试完成
+        -- Test complete
         wait;
     end process STIM;
 

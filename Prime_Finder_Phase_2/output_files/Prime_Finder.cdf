@@ -4,7 +4,7 @@ JedecChain;
 	DefaultMfr(6E);
 
 	P ActionCode(Cfg)
-		Device PartName(10M50DAF484) Path("D:/intelFPGA_lite/18.1/project/Prime_Finder/output_files/") File("Prime_Finder.sof") MfrSpec(OpMask(1));
+		Device PartName(10M50DAF484) Path("D:/intelFPGA_lite/18.1/project/PrimeFinder/Prime_Finder_Phase_2/output_files/") File("Prime_Finder.sof") MfrSpec(OpMask(1));
 
 ChainEnd;
 

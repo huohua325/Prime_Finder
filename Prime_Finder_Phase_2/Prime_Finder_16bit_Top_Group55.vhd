@@ -1,18 +1,18 @@
 --------------------------------------------------------------------------------
--- 模块名称: Prime_Finder_16bit_Top_Group55
--- 功能描述: 16位质数检测器顶层 (时分复用输入)
--- 优化类型: 阶段2优化4 - 16位扩展
+-- Module Name: Prime_Finder_16bit_Top_Group55
+-- Description: 16-bit prime detector top level (time-division multiplexed input)
+-- Optimization: Phase 2 Optimization 4 - 16-bit extension
 -- 
--- 原理:
---   开发板只有10个开关，无法直接输入16位数据
---   使用时分复用: 分两次输入高8位和低8位
---   KEY0锁存高8位，KEY1锁存低8位并开始计算
+-- Principle:
+--   Development board only has 10 switches, cannot directly input 16-bit data
+--   Uses time-division multiplexing: input high 8 bits and low 8 bits in two steps
+--   KEY0 latches high 8 bits, KEY1 latches low 8 bits and starts calculation
 --
--- 操作流程:
---   1. SW[7:0]设置高8位，按KEY0锁存
---   2. SW[7:0]设置低8位，按KEY1开始计算
---   3. 等待计算完成，观察LED9结果
---   4. 按KEY0重新开始
+-- Operation Flow:
+--   1. Set SW[7:0] to high 8 bits, press KEY0 to latch
+--   2. Set SW[7:0] to low 8 bits, press KEY1 to start calculation
+--   3. Wait for calculation to complete, observe LED9 result
+--   4. Press KEY0 to restart
 --------------------------------------------------------------------------------
 
 library IEEE;
@@ -21,16 +21,16 @@ use IEEE.std_logic_unsigned.all;
 
 entity Prime_Finder_16bit_Top_Group55 is
     port(
-        -- 时钟
+        -- Clock
         MAX10_CLK1_50 : in  std_logic;
         
-        -- 开关输入
+        -- Switch input
         SW            : in  std_logic_vector(9 downto 0);
         
-        -- 按键输入 (active low)
+        -- Key input (active low)
         KEY           : in  std_logic_vector(1 downto 0);
         
-        -- 七段显示器
+        -- Seven-segment displays
         HEX0          : out std_logic_vector(6 downto 0);
         HEX1          : out std_logic_vector(6 downto 0);
         HEX2          : out std_logic_vector(6 downto 0);
@@ -38,7 +38,7 @@ entity Prime_Finder_16bit_Top_Group55 is
         HEX4          : out std_logic_vector(6 downto 0);
         HEX5          : out std_logic_vector(6 downto 0);
         
-        -- LED输出
+        -- LED output
         LEDR          : out std_logic_vector(9 downto 0)
     );
 end entity Prime_Finder_16bit_Top_Group55;
@@ -46,43 +46,51 @@ end entity Prime_Finder_16bit_Top_Group55;
 architecture rtl of Prime_Finder_16bit_Top_Group55 is
 
     ---------------------------------------------------------------------------
-    -- 状态机定义
+    -- State Machine Definition
     ---------------------------------------------------------------------------
     type input_state_type is (
-        WAIT_HIGH,    -- 等待输入高8位
-        WAIT_LOW,     -- 等待输入低8位
-        COMPUTING,    -- 计算中
-        SHOW_RESULT   -- 显示结果
+        WAIT_HIGH,    -- Wait for high 8-bit input
+        WAIT_LOW,     -- Wait for low 8-bit input
+        COMPUTING,    -- Computing
+        SHOW_RESULT   -- Show result
     );
     signal state : input_state_type := WAIT_HIGH;
 
     ---------------------------------------------------------------------------
-    -- 内部信号
+    -- Internal Signals
     ---------------------------------------------------------------------------
-    -- 16位数据
+    -- 16-bit data
     signal data_high : std_logic_vector(7 downto 0) := "00000000";
     signal data_low  : std_logic_vector(7 downto 0) := "00000000";
-    signal data_full : std_logic_vector(15 downto 0);
+    signal data_full : std_logic_vector(15 downto 0) := (others => '0');
     
-    -- 按键边沿检测
+    -- Key debounce and edge detection
+    signal key0_sync1, key0_sync2 : std_logic := '1';
+    signal key1_sync1, key1_sync2 : std_logic := '1';
     signal key0_prev, key1_prev : std_logic := '1';
-    signal key0_edge, key1_edge : std_logic := '0';
+    signal key0_pressed, key1_pressed : std_logic := '0';
     
-    -- 质数检测信号
+    -- Debounce counter (50MHz / 50000 = 1ms debounce)
+    constant DEBOUNCE_MAX : integer := 50000;
+    signal debounce_cnt0 : integer range 0 to DEBOUNCE_MAX := 0;
+    signal debounce_cnt1 : integer range 0 to DEBOUNCE_MAX := 0;
+    signal key0_stable, key1_stable : std_logic := '1';
+    
+    -- Prime detection signals
     signal start_check : std_logic := '0';
     signal is_prime    : std_logic := '0';
     signal check_done  : std_logic := '0';
     
-    -- 简化的质数检测 (对于演示)
+    -- Simplified prime detection (for demonstration)
     signal check_counter : integer range 0 to 1000 := 0;
     signal current_divisor : std_logic_vector(15 downto 0);
     signal n_reg : std_logic_vector(15 downto 0);
     
-    -- 十进制显示
+    -- Decimal display
     signal digit0, digit1, digit2, digit3, digit4 : std_logic_vector(3 downto 0);
 
     ---------------------------------------------------------------------------
-    -- 七段显示器编码函数
+    -- Seven-segment Display Encoding Function
     ---------------------------------------------------------------------------
     function seg7_encode(digit : std_logic_vector(3 downto 0)) 
         return std_logic_vector is
@@ -113,48 +121,79 @@ architecture rtl of Prime_Finder_16bit_Top_Group55 is
 begin
 
     ---------------------------------------------------------------------------
-    -- 按键边沿检测
+    -- Key Synchronization and Debounce
     ---------------------------------------------------------------------------
-    EDGE_DETECT: process(MAX10_CLK1_50)
+    KEY_DEBOUNCE: process(MAX10_CLK1_50)
     begin
         if rising_edge(MAX10_CLK1_50) then
-            key0_prev <= KEY(0);
-            key1_prev <= KEY(1);
+            -- Two-stage synchronizer to prevent metastability
+            key0_sync1 <= KEY(0);
+            key0_sync2 <= key0_sync1;
+            key1_sync1 <= KEY(1);
+            key1_sync2 <= key1_sync1;
             
-            -- 下降沿检测 (按键按下)
-            if key0_prev = '1' and KEY(0) = '0' then
-                key0_edge <= '1';
+            -- KEY0 debounce
+            if key0_sync2 /= key0_stable then
+                if debounce_cnt0 < DEBOUNCE_MAX then
+                    debounce_cnt0 <= debounce_cnt0 + 1;
+                else
+                    key0_stable <= key0_sync2;
+                    debounce_cnt0 <= 0;
+                end if;
             else
-                key0_edge <= '0';
+                debounce_cnt0 <= 0;
             end if;
             
-            if key1_prev = '1' and KEY(1) = '0' then
-                key1_edge <= '1';
+            -- KEY1 debounce
+            if key1_sync2 /= key1_stable then
+                if debounce_cnt1 < DEBOUNCE_MAX then
+                    debounce_cnt1 <= debounce_cnt1 + 1;
+                else
+                    key1_stable <= key1_sync2;
+                    debounce_cnt1 <= 0;
+                end if;
             else
-                key1_edge <= '0';
+                debounce_cnt1 <= 0;
+            end if;
+            
+            -- Edge detection on stable signal
+            key0_prev <= key0_stable;
+            key1_prev <= key1_stable;
+            
+            -- Falling edge = key pressed (active low)
+            if key0_prev = '1' and key0_stable = '0' then
+                key0_pressed <= '1';
+            else
+                key0_pressed <= '0';
+            end if;
+            
+            if key1_prev = '1' and key1_stable = '0' then
+                key1_pressed <= '1';
+            else
+                key1_pressed <= '0';
             end if;
         end if;
     end process;
 
     ---------------------------------------------------------------------------
-    -- 输入状态机
+    -- Input State Machine
     ---------------------------------------------------------------------------
     INPUT_FSM: process(MAX10_CLK1_50)
     begin
         if rising_edge(MAX10_CLK1_50) then
-            start_check <= '0';  -- 默认
+            start_check <= '0';  -- Default
             
             case state is
                 when WAIT_HIGH =>
-                    -- 等待用户输入高8位
-                    if key0_edge = '1' then
+                    -- Wait for user to input high 8 bits
+                    if key0_pressed = '1' then
                         data_high <= SW(7 downto 0);
                         state <= WAIT_LOW;
                     end if;
                     
                 when WAIT_LOW =>
-                    -- 等待用户输入低8位
-                    if key1_edge = '1' then
+                    -- Wait for user to input low 8 bits
+                    if key1_pressed = '1' then
                         data_low <= SW(7 downto 0);
                         data_full <= data_high & SW(7 downto 0);
                         start_check <= '1';
@@ -162,23 +201,26 @@ begin
                     end if;
                     
                 when COMPUTING =>
-                    -- 等待计算完成
+                    -- Wait for calculation to complete
                     if check_done = '1' then
                         state <= SHOW_RESULT;
                     end if;
                     
                 when SHOW_RESULT =>
-                    -- 显示结果，等待重新开始
-                    if key0_edge = '1' then
+                    -- Show result, wait to restart
+                    if key0_pressed = '1' then
                         state <= WAIT_HIGH;
                     end if;
+                    
+                when others =>
+                    state <= WAIT_HIGH;
             end case;
         end if;
     end process;
 
     ---------------------------------------------------------------------------
-    -- 简化质数检测 (演示用)
-    -- 注意: 完整实现需要16位除法器，这里简化处理
+    -- Simplified Prime Detection (For Demonstration)
+    -- Note: Full implementation needs 16-bit divider, simplified here
     ---------------------------------------------------------------------------
     PRIME_CHECK: process(MAX10_CLK1_50)
         variable temp_n : std_logic_vector(15 downto 0);
@@ -186,60 +228,64 @@ begin
         variable is_div : std_logic;
     begin
         if rising_edge(MAX10_CLK1_50) then
-            if start_check = '1' then
+            -- Reset when back to WAIT_HIGH
+            if state = WAIT_HIGH then
+                check_done <= '0';
+                check_counter <= 0;
+            elsif start_check = '1' then
                 n_reg <= data_full;
-                current_divisor <= "0000000000000010";  -- 从2开始
+                current_divisor <= "0000000000000010";  -- Start from 2
                 check_counter <= 0;
                 check_done <= '0';
-                is_prime <= '1';  -- 假设是质数
+                is_prime <= '1';  -- Assume is prime
                 
             elsif state = COMPUTING and check_done = '0' then
                 check_counter <= check_counter + 1;
                 
-                -- 特殊情况处理
+                -- Special case handling
                 if n_reg < "0000000000000010" then
-                    -- N < 2，不是质数
+                    -- N < 2, not prime
                     is_prime <= '0';
                     check_done <= '1';
                 elsif n_reg = "0000000000000010" then
-                    -- N = 2，是质数
+                    -- N = 2, is prime
                     is_prime <= '1';
                     check_done <= '1';
                 elsif current_divisor >= n_reg then
-                    -- 测试完毕，是质数
+                    -- Test complete, is prime
                     check_done <= '1';
                 else
-                    -- 简化的整除检测 (只检测2和3)
-                    -- 完整版需要16位除法器
+                    -- Simplified divisibility check (only checks 2 and 3)
+                    -- Full version needs 16-bit divider
                     if current_divisor = "0000000000000010" then
-                        -- 检测是否被2整除
+                        -- Check if divisible by 2
                         if n_reg(0) = '0' then
                             is_prime <= '0';
                             check_done <= '1';
                         else
-                            current_divisor <= "0000000000000011";  -- 下一个测3
+                            current_divisor <= "0000000000000011";  -- Next test 3
                         end if;
                     elsif current_divisor = "0000000000000011" then
-                        -- 检测是否被3整除 (简化: 检查模3)
-                        -- 这里使用简化判断，完整版需要除法
-                        current_divisor <= "0000000000000101";  -- 跳到5
+                        -- Check if divisible by 3 (simplified: check mod 3)
+                        -- Using simplified check here, full version needs division
+                        current_divisor <= "0000000000000101";  -- Jump to 5
                         
-                        -- 简化的模3检测
+                        -- Simplified mod 3 check
                         temp_n := n_reg;
                         if temp_n = "0000000000000011" or 
                            temp_n = "0000000000000110" or
                            temp_n = "0000000000001001" or
                            temp_n = "0000000000001100" or
                            temp_n = "0000000000001111" then
-                            -- 能被3整除 (硬编码一些例子)
+                            -- Divisible by 3 (hardcoded some examples)
                             if n_reg > "0000000000000011" then
                                 is_prime <= '0';
                                 check_done <= '1';
                             end if;
                         end if;
                     else
-                        -- 对于其他除数，简化处理
-                        -- 超时后直接判定为质数 (演示用)
+                        -- For other divisors, simplified handling
+                        -- Timeout then judge as prime (for demonstration)
                         if check_counter > 100 then
                             check_done <= '1';
                         else
@@ -252,8 +298,8 @@ begin
     end process;
 
     ---------------------------------------------------------------------------
-    -- 二进制转十进制 (16位 -> 5位十进制)
-    -- 简化实现: 只显示低16位的十六进制
+    -- Binary to Decimal (16-bit -> 5-digit decimal)
+    -- Simplified implementation: Only display hexadecimal of lower 16 bits
     ---------------------------------------------------------------------------
     digit0 <= data_full(3 downto 0);
     digit1 <= data_full(7 downto 4);
@@ -262,23 +308,23 @@ begin
     digit4 <= "0000";
 
     ---------------------------------------------------------------------------
-    -- 七段显示器输出
+    -- Seven-segment Display Output
     ---------------------------------------------------------------------------
-    -- 根据状态显示不同内容
-    process(state, digit0, digit1, digit2, digit3)
+    -- Display different content based on state
+    process(state, digit0, digit1, digit2, digit3, SW, data_high)
     begin
         case state is
             when WAIT_HIGH =>
-                -- 显示 "HI" 提示输入高位
+                -- Display "HI" and current SW value for debugging
                 HEX5 <= "0001001";  -- H
                 HEX4 <= "1111001";  -- I
                 HEX3 <= "1111111";  -- off
                 HEX2 <= "1111111";
-                HEX1 <= "1111111";
-                HEX0 <= "1111111";
+                HEX1 <= seg7_encode(SW(7 downto 4));  -- Show current SW high nibble
+                HEX0 <= seg7_encode(SW(3 downto 0));  -- Show current SW low nibble
                 
             when WAIT_LOW =>
-                -- 显示 "LO" 提示输入低位
+                -- Display "LO" to prompt for low bits input
                 HEX5 <= "1000111";  -- L
                 HEX4 <= "1000000";  -- O
                 HEX3 <= "1111111";
@@ -287,7 +333,7 @@ begin
                 HEX0 <= "1111111";
                 
             when COMPUTING =>
-                -- 显示 "----" 计算中
+                -- Display "----" computing
                 HEX5 <= "0111111";  -- -
                 HEX4 <= "0111111";
                 HEX3 <= "0111111";
@@ -296,7 +342,7 @@ begin
                 HEX0 <= "1111111";
                 
             when SHOW_RESULT =>
-                -- 显示完整16位数 (十六进制)
+                -- Display full 16-bit number (hexadecimal)
                 HEX5 <= "1111111";
                 HEX4 <= "1111111";
                 HEX3 <= seg7_encode(digit3);
@@ -307,18 +353,18 @@ begin
     end process;
 
     ---------------------------------------------------------------------------
-    -- LED输出
+    -- LED Output
     ---------------------------------------------------------------------------
-    -- LED9: 质数结果
+    -- LED9: Prime result
     LEDR(9) <= is_prime when state = SHOW_RESULT else '0';
     
-    -- LED8-7: 状态指示
+    -- LED8-7: State indicators
     LEDR(8) <= '1' when state = WAIT_HIGH else '0';
     LEDR(7) <= '1' when state = WAIT_LOW else '0';
     LEDR(6) <= '1' when state = COMPUTING else '0';
     LEDR(5) <= '1' when state = SHOW_RESULT else '0';
     
-    -- LED4-0: 未使用
+    -- LED4-0: Unused
     LEDR(4 downto 0) <= "00000";
 
 end architecture rtl;
